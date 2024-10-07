@@ -18,57 +18,49 @@ onMounted(() => {
         const ctx = chartCanvas.value.getContext('2d');
         if (ctx) {
             const range = 20;
-            const start = props.solution - range;
-            const end = props.solution + range;
-
+            const start = Math.floor(props.solution - range);
+            const end = Math.ceil(props.solution + range);
+            const step = 0.1;
+ 
             new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: Array.from({ length: end - start + 1 }, (_, i) => start + i),
                     datasets: [
                         {
                             label: 'Function',
-                            data: Array.from({ length: end - start + 1 }, (_, i) => {
-                                const x = start + i;
-                                const result = evaluate(ExpressionUtils.sanitizeExpression(props.functionExpression), { x });
-                                return result;
+                            data: Array.from({ length: Math.floor((end - start) / step) + 1 }, (_, i) => {
+                                const x = start + i * step;
+                                const y = evaluate(ExpressionUtils.sanitizeExpression(props.functionExpression), { x });
+                                return { x, y };
                             }),
                             borderColor: 'blue',
                             fill: false,
                         },
                         {
                             label: 'Solution Point',
-                            data: Array.from({ length: end - start + 1 }, (_, i) => {
-                                const x = start + i;
-                                return x === props.solution ? evaluate(ExpressionUtils.sanitizeExpression(props.functionExpression), { x }) : null;
-                            }),
+                            data: [{ x: props.solution, y: evaluate(ExpressionUtils.sanitizeExpression(props.functionExpression), { x: props.solution }) }],
                             borderColor: 'red',
+                            backgroundColor: 'red',
                             pointRadius: 10,
-                            pointBackgroundColor: 'red',
+                            pointHoverRadius: 8,
                             showLine: false,
                         },
                     ],
                 },
                 options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
                     scales: {
                         x: {
+                            type: 'linear',
+                            position: 'bottom',
                             grid: {
-                                color: (context) => {
-                                    if (context.tick.value === 0) {
-                                        return 'rgba(0, 0, 0, 1)';
-                                    }
-                                    return 'rgba(0, 0, 0, 0.1)';
-                                }
-                            }
+                                color: (context) => context.tick.value === 0 ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0.1)',
+                            },
                         },
                         y: {
                             grid: {
-                                color: (context) => {
-                                    if (context.tick.value === 0) {
-                                        return 'rgba(0, 0, 0, 1)';
-                                    }
-                                    return 'rgba(0, 0, 0, 0.1)';
-                                }
+                                color: (context) => context.tick.value === 0 ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0.1)',
                             },
                         }
                     }
