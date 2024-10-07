@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import { Chart, registerables } from 'chart.js';
 import { evaluate } from 'mathjs';
 import ExpressionUtils from '../util/ChartUtils';
+import { DownloadChartUtils } from '../util/DownloadChartUtils';
 
 Chart.register(...registerables);
 
@@ -12,6 +13,7 @@ const props = defineProps<{
 }>();
 
 const chartCanvas = ref<HTMLCanvasElement | null>(null);
+const chartContainer = ref<HTMLElement | null>(null);
 
 onMounted(() => {
     if (chartCanvas.value) {
@@ -69,12 +71,21 @@ onMounted(() => {
         }
     }
 });
+
+const downloadChart = () => {
+    if (chartCanvas.value) {
+        DownloadChartUtils.downloadSVG(chartCanvas.value, 'function-chart.svg');
+    }
+};
 </script>
 
 <template>
     <div class="card shadow mb-4">
-      <div class="card-header py-3">
+      <div class="card-header py-3 d-flex justify-content-between align-items-center">
         <h6 class="m-0 font-weight-bold text-primary">Graph</h6>
+        <button @click="downloadChart" class="btn btn-primary btn-sm">
+          Download SVG
+        </button>
       </div>
       <div class="card-body">
         <div class="chart-container" ref="chartContainer">

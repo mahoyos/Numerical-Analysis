@@ -1,14 +1,15 @@
 from utils.math_operations import MathOperations
 from typing import Dict, Any
 
+
 class FixedPointService:
     @staticmethod
     def fixed_point_service(
-        initial_guess : float,
-        tolerance : float,
-        max_iterations : int,
-        function_expression : str,
-        g_expression : str
+        initial_guess: float,
+        tolerance: float,
+        max_iterations: int,
+        function_expression: str,
+        g_expression: str
     ) -> Dict[str, Any]:
         iteration_data = []
         x = initial_guess

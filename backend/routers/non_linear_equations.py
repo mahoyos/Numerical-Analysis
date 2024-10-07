@@ -15,5 +15,4 @@ async def fixed_point_route(input_data: FixedPointInput) -> Dict[str, Any]:
         input_data.function_expression,
         input_data.g_expression
     )
-    print("RESULT : ", result["root"])
     return result
