@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from models.non_linear_equations import FixedPointInput
-from services.non_linear_equations.fixed_point import FixedPointService
+from backend.services.non_linear_equations import FixedPointService
 from typing import Dict, Any
 
 router = APIRouter()

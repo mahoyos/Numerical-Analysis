@@ -2,7 +2,7 @@ from utils.math_operations import MathOperations
 from typing import Dict, Any
 
 
-class FixedPointService:
+class NonLinearEquationsService:
     @staticmethod
     def fixed_point_service(
         initial_guess: float,
