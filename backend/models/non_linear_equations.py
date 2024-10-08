@@ -14,3 +14,10 @@ class NewtonRaphsonInput(BaseModel):
     tolerance: float
     max_iterations: int
     function_expression: str
+
+
+class MultipleRootsInput(BaseModel):
+    initial_guess: float
+    tolerance: float
+    max_iterations: int
+    function_expression: str
