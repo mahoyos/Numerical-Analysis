@@ -17,6 +17,7 @@ async def fixed_point_route(input_data: FixedPointInput) -> Dict[str, Any]:
     )
     return result
 
+
 @router.post("/multiple-roots")
 async def multiple_roots_route(input_data: MultipleRootsInput) -> Dict[str, Any]:
     result = NonLinearEquationsService.multiple_roots_service(
