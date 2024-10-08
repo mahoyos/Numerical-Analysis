@@ -17,6 +17,7 @@ async def fixed_point_route(input_data: FixedPointInput) -> Dict[str, Any]:
     )
     return result
 
+
 @router.post("/newton-raphson")
 async def newton_raphson_route(input_data: NewtonRaphsonInput) -> Dict[str, Any]:
     result = NonLinearEquationsService.newton_raphson_service(

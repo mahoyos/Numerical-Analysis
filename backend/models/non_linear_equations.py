@@ -8,6 +8,7 @@ class FixedPointInput(BaseModel):
     function_expression: str
     g_expression: str
 
+
 class NewtonRaphsonInput(BaseModel):
     initial_guess: float
     tolerance: float
