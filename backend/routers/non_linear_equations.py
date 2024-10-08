@@ -9,6 +9,7 @@ router = APIRouter()
 @router.post("/fixed-point")
 async def fixed_point_route(input_data: FixedPointInput) -> Dict[str, Any]:
     result = NonLinearEquationsService.fixed_point_service(
+    result = NonLinearEquationsService.fixed_point_service(
         input_data.initial_guess,
         input_data.tolerance,
         input_data.max_iterations,
