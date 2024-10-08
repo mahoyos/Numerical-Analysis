@@ -17,6 +17,20 @@ class NonLinearEquationsService {
       throw error;
     }
   }
+
+  async postNewtonRaphsonData(formData: any): Promise<any> {
+    try {
+      const response = await axios.post(API_URL + 'newton-raphson', formData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error posting data:', error);
+      throw error;
+    }
+  }
 }
 
 export default new NonLinearEquationsService();
