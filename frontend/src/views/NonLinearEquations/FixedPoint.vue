@@ -92,4 +92,4 @@ const handleSubmit = async (event: any) => {
   </div>
   <Table :tableData="tableData" />
   <Chart v-if="solutionPoint !== null" :functionExpression="chartData.function_expression" :solution="chartData.solution" />
-</template>
+  </template>

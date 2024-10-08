@@ -19,6 +19,8 @@
     "@turf/turf": "^7.0.0",
     "axios": "^1.7.2",
     "chart.js": "^4.4.4",
+    "chartjs-plugin-zoom": "^2.0.1",
+    "jsxgraph": "^1.10.0",
     "leaflet": "^1.9.4",
     "mathjs": "^13.2.0",
     "vue": "^3.4.21",
