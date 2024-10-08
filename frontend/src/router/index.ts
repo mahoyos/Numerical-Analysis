@@ -4,6 +4,7 @@ import NonLinearEquationsView from '../views/NonLinearEquationsView.vue';
 import HomeView from '../views/HomeView.vue';
 import EquationsSystemsView from '../views/EquationsSystemsView.vue';
 import FixedPointView from '../views/NonLinearEquations/FixedPoint.vue';
+import NewtonRaphsonView from '../views/NonLinearEquations/NewtonRaphson.vue';
 import MultipleRootsView from '../views/NonLinearEquations/MultipleRoots.vue';
 
 const router = createRouter({
@@ -28,6 +29,11 @@ const router = createRouter({
       path: '/fixed-point',
       name: 'fixed-point',
       component: FixedPointView
+    },
+    {
+      path: '/newton-raphson',
+      name: 'newton-raphson',
+      component: NewtonRaphsonView
     },
     {
       path: '/multiple-roots',
