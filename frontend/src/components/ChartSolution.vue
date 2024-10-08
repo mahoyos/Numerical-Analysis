@@ -23,6 +23,12 @@ onMounted(() => {
             const start = Math.floor(props.solution - range);
             const end = Math.ceil(props.solution + range);
             const step = 0.1;
+
+            const data = Array.from({ length: Math.floor((end - start) / step) + 1 }, (_, i) => {
+                    const x = start + i * step;
+                    const y = evaluate(ExpressionUtils.sanitizeExpression(props.functionExpression), { x });
+                    return { x, y };
+            });
  
             new Chart(ctx, {
                 type: 'line',
@@ -64,6 +70,13 @@ onMounted(() => {
                             grid: {
                                 color: (context) => context.tick.value === 0 ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0.1)',
                             },
+                            ticks : {
+                                callback : function (value) {
+                                    return value;
+                                },
+                            },
+                            suggestedMin : Math.min(...data.map(p => p.y)) - 10,
+                            suggestedMax : Math.max(...data.map(p => p.y)) + 10,
                         }
                     }
                 }
