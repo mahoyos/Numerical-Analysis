@@ -1,16 +1,21 @@
 from utils.math_operations import MathOperations
+from utils.errors.non_linear_equations_errors import ErrorHandler
+from utils.errors.common_errors import MaxIterationsReachedError, ToleranceNotMetError
 from typing import Dict, Any
 
 
 class NonLinearEquationsService:
     @staticmethod
+    @ErrorHandler.handle_numerical_errors
     def fixed_point_service(
         initial_guess: float,
         tolerance: float,
         max_iterations: int,
         function_expression: str,
-        g_expression: str
+        g_expression: str,
+        error_type: str
     ) -> Dict[str, Any]:
+        print(error_type)
         iteration_data = []
         x = initial_guess
         f_value = MathOperations.evaluate_function(function_expression, x)
@@ -22,9 +27,17 @@ class NonLinearEquationsService:
             x_new = MathOperations.evaluate_function(g_expression, x)
             f_value = MathOperations.evaluate_function(function_expression, x_new)
             iteration_count += 1
-            error = abs(x_new - x)
+            if error_type == 'relative' and x != 0 :
+                error = abs(x_new - x) / abs(x)
+            else :
+                error = abs(x_new - x)
             x = x_new
             iteration_data.append((iteration_count, x, f_value, error))
+        
+        if iteration_count >= max_iterations:
+            raise MaxIterationsReachedError()
+        if error > tolerance:
+            raise ToleranceNotMetError()
 
         result = {
             "root": x,

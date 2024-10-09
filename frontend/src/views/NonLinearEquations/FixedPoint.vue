@@ -20,6 +20,9 @@ let chartData = ref({
   solution: 0
 });
 
+const message = ref('');
+const messageType = ref<string | null>(null);
+
 const handleSubmit = async (event: any) => {
   event.preventDefault();
   let formData = new FormData(event.target);
@@ -29,21 +32,28 @@ const handleSubmit = async (event: any) => {
     max_iterations: parseInt(formData.get('maxIterations') as string, 10),
     function_expression: formData.get('functionExpression') as string,
     g_expression: formData.get('gExpression') as string,
+    error_type : formData.get('errorType') as string,
   };
 
   try {
     const response = await NonLinearEquationsService.postFixedPointData(data);
-    tableData.value = response.iterations.map((iteration: any) => ({
-      iteration: iteration[0],
-      value1: iteration[1],
-      value2: iteration[2],
-      value3: iteration[3],
-    }));
-    solutionPoint.value = response.root;
-    chartData.value = {
-      function_expression: data.function_expression,
-      solution: response.root
-    };
+
+    messageType.value = response.status;
+    message.value = response.error.message;
+
+    if(response.status === 'success'){
+        tableData.value = response.iterations.map((iteration: any) => ({
+        iteration: iteration[0],
+        value1: iteration[1],
+        value2: iteration[2],
+        value3: iteration[3],
+        }));
+        solutionPoint.value = response.root;
+        chartData.value = {
+          function_expression: data.function_expression,
+          solution: response.root
+        };
+    }
   } catch (error) {
     console.error('Error posting form data:', error);
   }
@@ -63,24 +73,31 @@ const handleSubmit = async (event: any) => {
         <div class="row">
           <div class="col">
             <label for="initialGuess">Initial Guess</label>
-            <input type="number" class="form-control" id="initialGuess" name="initialGuess" placeholder="Enter initial guess">
+            <input type="text" class="form-control" id="initialGuess" name="initialGuess" placeholder="Enter initial guess">
           </div>
           <div class="col">
-            <label for="tolerance">Tolerance</label>
-            <input type="number" class="form-control" id="tolerance" name="tolerance" placeholder="Enter tolerance" step="0.0001">
+            <label for="maxIterations">Max Iterations</label>
+            <input type="text" class="form-control" id="maxIterations" name="maxIterations" placeholder="Enter max iterations">
           </div>
         </div>
         <div class="row mt-3">
           <div class="col">
-            <label for="maxIterations">Max Iterations</label>
-            <input type="number" class="form-control" id="maxIterations" name="maxIterations" placeholder="Enter max iterations">
+            <label for="tolerance">Tolerance</label>
+            <input type="text" class="form-control" id="tolerance" name="tolerance" placeholder="Enter tolerance" step="0.0001">
           </div>
+          <div class="col">
+            <label for="errorType">Error Type</label>
+            <select class="form-control" id="errorType" name="errorType">
+              <option value="absolute">Absolute Error</option>
+              <option value="relative">Relative Error</option>
+            </select>
+          </div>
+        </div>
+        <div class="row mt-3">
           <div class="col">
             <label for="functionExpression">Function Expression</label>
             <input type="text" class="form-control" id="functionExpression" name="functionExpression" placeholder="Enter function expression">
           </div>
-        </div>
-        <div class="row mt-3">
           <div class="col">
             <label for="gExpression">G Expression</label>
             <input type="text" class="form-control" id="gExpression" name="gExpression" placeholder="Enter g expression">
@@ -90,6 +107,9 @@ const handleSubmit = async (event: any) => {
       </form>
     </div>
   </div>
-  <Table :tableData="tableData" />
+  <div v-if="message" class="alert" :class="{'alert-success': messageType === 'success', 'alert-danger': messageType === 'error'}">
+    {{ message }}
+  </div>
+  <Table v-if="messageType === 'success'" :tableData="tableData" />
   <Chart v-if="solutionPoint !== null" :functionExpression="chartData.function_expression" :solution="chartData.solution" />
   </template>

@@ -18,11 +18,9 @@ const chartInstance = ref<Chart | null>(null);
 
 const generateChartData = (start: number, end: number, step: number) => {
   const parsedExpression = parse(ExpressionUtils.sanitizeExpression(props.functionExpression));
-  console.log("Function " + parsedExpression);
   return Array.from({ length: Math.floor((end - start) / step) + 1 }, (_, i) => {
     const x = start + i * step;
     const y = parsedExpression.evaluate({ x: x });
-    console.log("X : " + x + " , Y : " + y);
     return { x, y };
   });
 };
@@ -31,7 +29,7 @@ const createChart = () => {
   if (chartCanvas.value) {
     const ctx = chartCanvas.value.getContext('2d');
     if (ctx) {
-      const range = 100;
+      const range = 20; 
       const start = Math.floor(props.solution - range);
       const end = Math.ceil(props.solution + range);
       const step = 0.1;
@@ -43,11 +41,15 @@ const createChart = () => {
           x: {
             type: 'linear',
             position: 'bottom',
+            min: start,
+            max: end,
             grid: {
               color: (context) => context.tick.value === 0 ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0.1)',
             },
           },
           y: {
+            min: - 10,
+            max: 10,
             grid: {
               color: (context) => context.tick.value === 0 ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0.1)',
             },
@@ -68,7 +70,6 @@ const createChart = () => {
         },
       };
 
-      const parsedExpression = parse(ExpressionUtils.sanitizeExpression(props.functionExpression));
       chartInstance.value = new Chart(ctx, {
         type: 'line',
         data: {
@@ -83,13 +84,14 @@ const createChart = () => {
               label: 'Solution Point',
               data: [{ 
                 x: props.solution, 
-                y: parsedExpression.evaluate({ x: props.solution }) 
+                y: parse(ExpressionUtils.sanitizeExpression(props.functionExpression)).evaluate({ x: props.solution }) 
               }],
               borderColor: 'red',
               backgroundColor: 'red',
-              pointRadius: 10,
+              pointRadius: 5,
               pointHoverRadius: 8,
               showLine: false,
+              order : 1,
             },
           ],
         },
@@ -106,11 +108,10 @@ const updateChart = () => {
     const end = Math.ceil(props.solution + range);
     const step = 0.1;
 
-    const parsedExpression = parse(ExpressionUtils.sanitizeExpression(props.functionExpression));
     chartInstance.value.data.datasets[0].data = generateChartData(start, end, step);
     chartInstance.value.data.datasets[1].data = [{
       x: props.solution,
-      y: parsedExpression.evaluate({ x: props.solution })
+      y: parse(ExpressionUtils.sanitizeExpression(props.functionExpression)).evaluate({ x: props.solution })
     }];
 
     chartInstance.value.update();
@@ -141,9 +142,9 @@ watch(() => [props.functionExpression, props.solution], () => {
 <template>
   <div class="card shadow mb-4">
     <div class="card-header py-3 d-flex justify-content-between align-items-center">
-      <h6 class="m-0 font-weight-bold text-primary">Graph</h6>
+      <h6 class="m-0 font-weight-bold text-primary">Chart</h6>
       <div>
-        <button @click="resetZoom" class="btn btn-secondary btn-sm mr-2">
+        <button @click="resetZoom" class="btn btn-secondary btn-sm mr-3">
           Reset Zoom
         </button>
         <button @click="downloadChart" class="btn btn-primary btn-sm">

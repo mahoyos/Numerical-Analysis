@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from typing import Literal
 
 class FixedPointInput(BaseModel):
     initial_guess: float
@@ -7,3 +7,4 @@ class FixedPointInput(BaseModel):
     max_iterations: int
     function_expression: str
     g_expression: str
+    error_type : Literal['absolute', 'relative']

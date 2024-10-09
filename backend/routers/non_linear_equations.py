@@ -13,6 +13,7 @@ async def fixed_point_route(input_data: FixedPointInput) -> Dict[str, Any]:
         input_data.tolerance,
         input_data.max_iterations,
         input_data.function_expression,
-        input_data.g_expression
+        input_data.g_expression,
+        input_data.error_type
     )
     return result
