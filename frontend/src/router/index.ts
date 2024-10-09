@@ -7,6 +7,7 @@ import FixedPointView from '../views/NonLinearEquations/FixedPoint.vue';
 import NewtonRaphsonView from '../views/NonLinearEquations/NewtonRaphson.vue';
 import MultipleRootsView from '../views/NonLinearEquations/MultipleRoots.vue';
 import FalsePositionView from '../views/NonLinearEquations/FalsePosition.vue';
+import BisectionView from '../views/NonLinearEquations/Bisection.vue';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -44,6 +45,11 @@ const router = createRouter({
       path: '/false-position',
       name: 'false-position',
       component: FalsePositionView
+    },
+    {
+      path: '/bisection',
+      name: 'bisection',
+      component: BisectionView
     },
   ]
 });

@@ -29,3 +29,10 @@ class FalsePositionInput(BaseModel):
     tolerance: float
     max_iterations: int
     function_expression: str
+
+class BisectionInput(BaseModel):
+    left_bound: float
+    right_bound: float
+    tolerance: float
+    max_iterations: int
+    function_expression: str
