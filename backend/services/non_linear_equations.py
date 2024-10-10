@@ -1,12 +1,12 @@
 from utils.math_operations import MathOperations
-from utils.errors.non_linear_equations_errors import ErrorHandler
+from utils.handlers.non_linear_equations_handler import NonLinearEquationsHandler
 from utils.errors.common_errors import MaxIterationsReachedError, ToleranceNotMetError
 from typing import Dict, Any
 
 
 class NonLinearEquationsService:
     @staticmethod
-    @ErrorHandler.handle_numerical_errors
+    @NonLinearEquationsHandler.handle_response
     def fixed_point_service(
         initial_guess: float,
         tolerance: float,

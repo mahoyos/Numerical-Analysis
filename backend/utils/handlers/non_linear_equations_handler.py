@@ -7,9 +7,9 @@ from utils.errors.common_errors import (
     FunctionEvaluationError,
 )
 
-class ErrorHandler:
+class NonLinearEquationsHandler:
     @staticmethod
-    def handle_numerical_errors(func : Callable) -> Callable : 
+    def handle_response(func : Callable) -> Callable : 
         @wraps(func)
         def wrapper(*args, **kwargs):
             try :
