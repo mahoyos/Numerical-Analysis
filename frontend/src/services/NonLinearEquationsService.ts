@@ -17,6 +17,62 @@ class NonLinearEquationsService {
       throw error;
     }
   }
+
+  async postNewtonRaphsonData(formData: any): Promise<any> {
+    try {
+      const response = await axios.post(API_URL + 'newton-raphson', formData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error posting data:', error);
+      throw error;
+    }
+  }
+
+  async postMultipleRootsData(formData: any): Promise<any> {
+    try {
+      const response = await axios.post(API_URL + 'multiple-roots', formData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error posting data:', error);
+      throw error;
+    }
+  }
+
+  async postFalsePositionData(formData: any): Promise<any> {
+    try {
+      const response = await axios.post(API_URL + 'false-position', formData, {
+        headers: {
+          'Content-Type': 'application/json' 
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error posting data:', error);
+      throw error;
+    }
+  }
+
+  async postBisectionData(formData: any): Promise<any> {
+    try {
+      const response = await axios.post(API_URL + 'bisection', formData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error posting data:', error);
+      throw error;
+    }
+  }
 }
 
 export default new NonLinearEquationsService();
