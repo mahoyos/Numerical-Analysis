@@ -20,3 +20,11 @@ class MaxIterationsReachedError(BaseError):
 class ToleranceNotMetError(BaseError):
     def __init__(self, message: str = "The specified tolerance was not reached."):
         super().__init__(message, "TOLERANCE_NOT_MET")
+
+class FunctionZeroValueError(BaseError):
+    def __init__(self, message: str = "The F function takes a zero value."):
+        super().__init__(message, "FUNCTION_ZERO_VALUE")
+
+class DerivativeZeroValueError(BaseError):
+    def __init__(self, message: str = "The derivative of F takes a zero value."):
+        super().__init__(message, "DERIVATIVE_ZERO_VALUE")

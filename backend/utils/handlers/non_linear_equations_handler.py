@@ -1,6 +1,6 @@
 from typing import Callable
 from functools import wraps
-from utils.response_handler import ResponseHandler
+from utils.handlers.response import ResponseHandler
 from utils.errors.common_errors import (
     BaseError,
     DivisionByZeroError,

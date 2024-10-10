@@ -8,14 +8,12 @@ import Chart from '../../components/ChartSolution.vue';
 let breadCrumbList = [
   { title: 'Home', route: '/' },
   { title: 'Non-Linear Equations', route: 'non-linear-equations' },
-  { title: 'Fixed Point', route: 'fixed-point' },
+  { title: 'False Position', route: 'false-position' },
 ];
 
 let tableData = ref([]);
-
 const solutionPoint = ref<number | null>(null);
-
-let chartData = ref({
+const chartData = ref({
   function_expression: '',
   solution: 0
 });
@@ -27,19 +25,19 @@ const handleSubmit = async (event: any) => {
   event.preventDefault();
   let formData = new FormData(event.target);
   const data = {
-    initial_guess: parseFloat(formData.get('initialGuess') as string),
+    left_bound: parseFloat(formData.get('leftBound') as string),
+    right_bound: parseFloat(formData.get('rightBound') as string),
     tolerance: parseFloat(formData.get('tolerance') as string),
     max_iterations: parseInt(formData.get('maxIterations') as string, 10),
     function_expression: formData.get('functionExpression') as string,
-    g_expression: formData.get('gExpression') as string,
     error_type : formData.get('errorType') as string,
   };
 
   try {
-    const response = await NonLinearEquationsService.postFixedPointData(data);
-
-    messageType.value = response.status;
-    message.value = response.error.message;
+    const response = await NonLinearEquationsService.postFalsePositionData(data);
+    
+    messageType.value = response.message_type;
+    message.value = response.message;
 
     if(response.status === 'success'){
         tableData.value = response.iterations.map((iteration: any) => ({
@@ -58,7 +56,6 @@ const handleSubmit = async (event: any) => {
     console.error('Error posting form data:', error);
   }
 };
-
 </script>
 
 <template>
@@ -66,24 +63,24 @@ const handleSubmit = async (event: any) => {
 
   <div class="card shadow mb-4">
     <div class="card-header py-3">
-      <h6 class="m-0 font-weight-bold text-primary">Fixed Point Method Form</h6>
+      <h6 class="m-0 font-weight-bold text-primary">False Position Method Form</h6>
     </div>
     <div class="card-body">
       <form @submit="handleSubmit">
         <div class="row">
           <div class="col">
-            <label for="initialGuess">Initial Guess</label>
-            <input type="text" class="form-control" id="initialGuess" name="initialGuess" placeholder="Enter initial guess">
+            <label for="lowerBound">Left Bound</label>
+            <input type="number" class="form-control" id="leftBound" name="leftBound" placeholder="Enter left bound">
           </div>
           <div class="col">
-            <label for="maxIterations">Max Iterations</label>
-            <input type="text" class="form-control" id="maxIterations" name="maxIterations" placeholder="Enter max iterations">
+            <label for="rightBound">Right Bound</label>
+            <input type="number" class="form-control" id="rightBound" name="rightBound" placeholder="Enter right bound">
           </div>
         </div>
         <div class="row mt-3">
           <div class="col">
             <label for="tolerance">Tolerance</label>
-            <input type="text" class="form-control" id="tolerance" name="tolerance" placeholder="Enter tolerance" step="0.0001">
+            <input type="number" class="form-control" id="tolerance" name="tolerance" placeholder="Enter tolerance" step="0.0001">
           </div>
           <div class="col">
             <label for="errorType">Error Type</label>
@@ -95,12 +92,12 @@ const handleSubmit = async (event: any) => {
         </div>
         <div class="row mt-3">
           <div class="col">
-            <label for="functionExpression">Function Expression</label>
-            <input type="text" class="form-control" id="functionExpression" name="functionExpression" placeholder="Enter function expression">
+            <label for="maxIterations">Max Iterations</label>
+            <input type="number" class="form-control" id="maxIterations" name="maxIterations" placeholder="Enter max iterations">
           </div>
           <div class="col">
-            <label for="gExpression">G Expression</label>
-            <input type="text" class="form-control" id="gExpression" name="gExpression" placeholder="Enter g expression">
+            <label for="functionExpression">Function Expression</label>
+            <input type="text" class="form-control" id="functionExpression" name="functionExpression" placeholder="Enter function expression">
           </div>
         </div>
         <button type="submit" class="btn btn-primary mt-3">Submit</button>
@@ -112,4 +109,4 @@ const handleSubmit = async (event: any) => {
   </div>
   <Table v-if="messageType === 'success'" :tableData="tableData" />
   <Chart v-if="solutionPoint !== null" :functionExpression="chartData.function_expression" :solution="chartData.solution" />
-  </template>
+</template>

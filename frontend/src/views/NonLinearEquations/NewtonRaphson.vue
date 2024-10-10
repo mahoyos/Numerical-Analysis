@@ -8,7 +8,7 @@ import Chart from '../../components/ChartSolution.vue';
 let breadCrumbList = [
   { title: 'Home', route: '/' },
   { title: 'Non-Linear Equations', route: 'non-linear-equations' },
-  { title: 'Fixed Point', route: 'fixed-point' },
+  { title: 'Newton Raphson', route: 'newton-raphson' },
 ];
 
 let tableData = ref([]);
@@ -31,16 +31,15 @@ const handleSubmit = async (event: any) => {
     tolerance: parseFloat(formData.get('tolerance') as string),
     max_iterations: parseInt(formData.get('maxIterations') as string, 10),
     function_expression: formData.get('functionExpression') as string,
-    g_expression: formData.get('gExpression') as string,
     error_type : formData.get('errorType') as string,
   };
 
   try {
-    const response = await NonLinearEquationsService.postFixedPointData(data);
-
+    const response = await NonLinearEquationsService.postNewtonRaphsonData(data);
+    
     messageType.value = response.status;
     message.value = response.error.message;
-
+    
     if(response.status === 'success'){
         tableData.value = response.iterations.map((iteration: any) => ({
         iteration: iteration[0],
@@ -66,24 +65,24 @@ const handleSubmit = async (event: any) => {
 
   <div class="card shadow mb-4">
     <div class="card-header py-3">
-      <h6 class="m-0 font-weight-bold text-primary">Fixed Point Method Form</h6>
+      <h6 class="m-0 font-weight-bold text-primary">Newton-Raphson Method Form</h6>
     </div>
     <div class="card-body">
       <form @submit="handleSubmit">
         <div class="row">
           <div class="col">
             <label for="initialGuess">Initial Guess</label>
-            <input type="text" class="form-control" id="initialGuess" name="initialGuess" placeholder="Enter initial guess">
+            <input type="number" class="form-control" id="initialGuess" name="initialGuess" placeholder="Enter initial guess">
           </div>
           <div class="col">
             <label for="maxIterations">Max Iterations</label>
-            <input type="text" class="form-control" id="maxIterations" name="maxIterations" placeholder="Enter max iterations">
+            <input type="number" class="form-control" id="maxIterations" name="maxIterations" placeholder="Enter max iterations">
           </div>
         </div>
         <div class="row mt-3">
           <div class="col">
             <label for="tolerance">Tolerance</label>
-            <input type="text" class="form-control" id="tolerance" name="tolerance" placeholder="Enter tolerance" step="0.0001">
+            <input type="number" class="form-control" id="tolerance" name="tolerance" placeholder="Enter tolerance" step="0.0001">
           </div>
           <div class="col">
             <label for="errorType">Error Type</label>
@@ -98,10 +97,6 @@ const handleSubmit = async (event: any) => {
             <label for="functionExpression">Function Expression</label>
             <input type="text" class="form-control" id="functionExpression" name="functionExpression" placeholder="Enter function expression">
           </div>
-          <div class="col">
-            <label for="gExpression">G Expression</label>
-            <input type="text" class="form-control" id="gExpression" name="gExpression" placeholder="Enter g expression">
-          </div>
         </div>
         <button type="submit" class="btn btn-primary mt-3">Submit</button>
       </form>
@@ -112,4 +107,4 @@ const handleSubmit = async (event: any) => {
   </div>
   <Table v-if="messageType === 'success'" :tableData="tableData" />
   <Chart v-if="solutionPoint !== null" :functionExpression="chartData.function_expression" :solution="chartData.solution" />
-  </template>
+</template>
