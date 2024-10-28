@@ -1,13 +1,14 @@
 from pydantic import BaseModel
 from typing import Literal
 
+
 class FixedPointInput(BaseModel):
     initial_guess: float
     tolerance: float
     max_iterations: int
     function_expression: str
     g_expression: str
-    error_type : Literal['absolute', 'relative']
+    error_type: Literal['absolute', 'relative']
 
 
 class NewtonRaphsonInput(BaseModel):
@@ -15,7 +16,7 @@ class NewtonRaphsonInput(BaseModel):
     tolerance: float
     max_iterations: int
     function_expression: str
-    error_type : Literal['absolute', 'relative']
+    error_type: Literal['absolute', 'relative']
 
 
 class MultipleRootsInput(BaseModel):
@@ -23,7 +24,7 @@ class MultipleRootsInput(BaseModel):
     tolerance: float
     max_iterations: int
     function_expression: str
-    error_type : Literal['absolute', 'relative']
+    error_type: Literal['absolute', 'relative']
 
 
 class FalsePositionInput(BaseModel):
@@ -32,7 +33,7 @@ class FalsePositionInput(BaseModel):
     tolerance: float
     max_iterations: int
     function_expression: str
-    error_type : Literal['absolute', 'relative']
+    error_type: Literal['absolute', 'relative']
 
 
 class BisectionInput(BaseModel):
@@ -41,4 +42,4 @@ class BisectionInput(BaseModel):
     tolerance: float
     max_iterations: int
     function_expression: str
-    error_type : Literal['absolute', 'relative']
+    error_type: Literal['absolute', 'relative']
