@@ -1,8 +1,8 @@
 from utils.math_operations import MathOperations
 from utils.handlers.non_linear_equations_handler import NonLinearEquationsHandler
 from utils.errors.common_errors import (
-    MaxIterationsReachedError, 
-    ToleranceNotMetError, 
+    MaxIterationsReachedError,
+    ToleranceNotMetError,
     FunctionZeroValueError,
     DerivativeZeroValueError
 )
@@ -35,16 +35,16 @@ class NonLinearEquationsService:
             iteration_count += 1
             if error_type == 'relative':
                 error = abs(x_new - x) / abs(x)
-            else :
+            else:
                 error = abs(x_new - x)
             x = x_new
             iteration_data.append((iteration_count, x, f_value, error))
-        
+
         if iteration_count >= max_iterations:
             raise MaxIterationsReachedError()
         if error > tolerance:
             raise ToleranceNotMetError()
-        if f_value != 0 :
+        if f_value != 0:
             raise FunctionZeroValueError()
 
         result = {
@@ -76,10 +76,10 @@ class NonLinearEquationsService:
             f_value = MathOperations.evaluate_function(function_expression, x_new)
             f_derivative_value = MathOperations.evaluate_function(derivative_expression, x_new)
             iteration_count += 1
-            if error_type == 'relative' :
+            if error_type == 'relative':
                 error = abs(x_new - x) / abs(x)
-            else : 
-                error = abs(x_new-x)
+            else:
+                error = abs(x_new - x)
             x = x_new
             iteration_data.append((iteration_count, x, f_value, error))
 
@@ -87,11 +87,11 @@ class NonLinearEquationsService:
             raise MaxIterationsReachedError()
         if error > tolerance:
             raise ToleranceNotMetError()
-        if f_value != 0 :
+        if f_value != 0:
             raise FunctionZeroValueError()
-        if f_derivative_value != 0 :
+        if f_derivative_value != 0:
             raise DerivativeZeroValueError()
-        
+
         result = {
             "root": x,
             "iterations": iteration_data
@@ -124,10 +124,10 @@ class NonLinearEquationsService:
             f_derivative_value = MathOperations.evaluate_function(derivate_expression, x_new)
             second_f_derivative_value = MathOperations.evaluate_function(second_derivative_expression, x_new)
             iteration_count += 1
-            if error_type == 'relative' :
+            if error_type == 'relative':
                 error = abs(x_new - x) / abs(x)
-            else : 
-                error = abs(x_new-x)
+            else:
+                error = abs(x_new - x)
             x = x_new
             iteration_data.append((iteration_count, x, f_value, error))
 
@@ -135,11 +135,11 @@ class NonLinearEquationsService:
             raise MaxIterationsReachedError()
         if error > tolerance:
             raise ToleranceNotMetError()
-        if f_value != 0 :
+        if f_value != 0:
             raise FunctionZeroValueError()
-        if f_derivative_value != 0 :
+        if f_derivative_value != 0:
             raise DerivativeZeroValueError()
-        
+
         result = {
             "root": x,
             "iterations": iteration_data
@@ -175,10 +175,10 @@ class NonLinearEquationsService:
             next_bound = right_bound - (function_right_bound * (right_bound - left_bound)) / (function_right_bound - function_left_bound)
             function_next_bound = MathOperations.evaluate_function(function_expression, next_bound)
 
-            if error_type == 'relative' :
+            if error_type == 'relative':
                 error = abs(next_bound - root_approximation) / abs(root_approximation)
-            else : 
-                error = abs(next_bound-root_approximation)
+            else:
+                error = abs(next_bound - root_approximation)
 
             if error <= tolerance:
                 break
@@ -200,13 +200,13 @@ class NonLinearEquationsService:
             raise MaxIterationsReachedError()
         if error > tolerance:
             raise ToleranceNotMetError()
-        
+
         result = {
             "root": root_approximation,
             "iterations": iteration_data
         }
         return result
-    
+
     @staticmethod
     @NonLinearEquationsHandler.handle_response
     def bisection_service(
@@ -220,19 +220,19 @@ class NonLinearEquationsService:
         iteration_data = []
         f_left = MathOperations.evaluate_function(function_expression, left_bound)
         f_right = MathOperations.evaluate_function(function_expression, right_bound)
-        
+
         if f_left == 0:
             return {"root": left_bound, "iterations": [(0, left_bound, f_left, 0)]}
         elif f_right == 0:
             return {"root": right_bound, "iterations": [(0, right_bound, f_right, 0)]}
-        
+
         iteration_count = 0
         mid_point = (left_bound + right_bound) / 2
         f_mid = MathOperations.evaluate_function(function_expression, mid_point)
         error = abs(0 - f_mid)
         prev_mid_point = mid_point
         iteration_data.append((iteration_count, mid_point, f_mid, error))
-        
+
         while error > tolerance and f_mid != 0 and iteration_count < max_iterations:
             if f_left * f_mid < 0:
                 right_bound = mid_point
@@ -240,26 +240,26 @@ class NonLinearEquationsService:
             else:
                 left_bound = mid_point
                 f_left = MathOperations.evaluate_function(function_expression, left_bound)
-            
+
             prev_mid_point = mid_point
             mid_point = (left_bound + right_bound) / 2
             f_mid = MathOperations.evaluate_function(function_expression, mid_point)
             if error_type == 'relative':
                 error = abs(mid_point - prev_mid_point) / abs(prev_mid_point)
-            else :
+            else:
                 error = abs(mid_point - prev_mid_point)
             iteration_count += 1
             iteration_data.append((iteration_count, mid_point, f_mid, error))
-        
+
         if iteration_count >= max_iterations:
             raise MaxIterationsReachedError()
         if error > tolerance:
             raise ToleranceNotMetError()
-        if f_mid != 0 :
+        if f_mid != 0:
             raise FunctionZeroValueError()
 
         result = {
             "root": mid_point,
             "iterations": iteration_data
-        }      
+        }
         return result

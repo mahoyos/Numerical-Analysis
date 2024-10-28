@@ -1,9 +1,9 @@
 from fastapi import APIRouter
 from models.non_linear_equations import (
-    FixedPointInput, 
-    MultipleRootsInput, 
-    NewtonRaphsonInput, 
-    FalsePositionInput, 
+    FixedPointInput,
+    MultipleRootsInput,
+    NewtonRaphsonInput,
+    FalsePositionInput,
     BisectionInput
 )
 from services.non_linear_equations import NonLinearEquationsService

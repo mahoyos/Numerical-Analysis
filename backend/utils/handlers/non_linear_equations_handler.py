@@ -7,12 +7,13 @@ from utils.errors.common_errors import (
     FunctionEvaluationError,
 )
 
+
 class NonLinearEquationsHandler:
     @staticmethod
-    def handle_response(func : Callable) -> Callable : 
+    def handle_response(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args, **kwargs):
-            try :
+            try:
                 result = func(*args, **kwargs)
                 return ResponseHandler.success_response(result)
             except BaseError as e:

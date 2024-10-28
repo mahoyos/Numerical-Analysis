@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Literal, List
 
+
 class SorInput(BaseModel):
     matrix_A: List[List[float]]
     solution_vector: List[float]
