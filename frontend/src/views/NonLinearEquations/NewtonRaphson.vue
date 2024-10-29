@@ -41,11 +41,10 @@ const handleSubmit = async (event: any) => {
     message.value = response.error.message;
     
     if(response.status === 'success'){
-        tableData.value = response.iterations.map((iteration: any) => ({
+        tableData.value = response.iteration_data.map((iteration: any) => ({
         iteration: iteration[0],
-        value1: iteration[1],
-        value2: iteration[2],
-        value3: iteration[3],
+        values: iteration[1],
+        error: iteration[2],
         }));
         solutionPoint.value = response.root;
         chartData.value = {

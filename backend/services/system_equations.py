@@ -1,5 +1,3 @@
-from utils.math_operations import MathOperations
-from utils.errors.non_linear_equations_errors import FalsePositionErrors
 from typing import Dict, Any, List
 import numpy as np
 
@@ -30,10 +28,10 @@ class SystemEquationsService:
             error = np.linalg.norm(x_new - x, ord=np.inf)
             x = x_new
             iteration_counter += 1
-            iteration_data.append([iteration_counter, x_new.tolist(), error])  # Convertimos x_new a lista
+            iteration_data.append([iteration_counter, x_new.tolist(), error])
 
         result = {
-            "root": x.tolist(),  # Convertimos x a lista para que sea JSON serializable
+            "root": x.tolist(), 
             "iteration_data": iteration_data
         }
 
