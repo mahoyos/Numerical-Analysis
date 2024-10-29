@@ -47,10 +47,11 @@ const handleSubmit = async (event : Event) => {
     tolerance: parseFloat(formData.get('tolerance') as string),
     max_iterations: parseInt(formData.get('maxIterations') as string, 10),
     error_type: formData.get('errorType') as string,
+    method : selectedMethod.value,
   };
 
   try {
-    const response = await SystemsEquationsService.postSorData(data);
+    const response = await SystemsEquationsService.postSystemsEquationsData(data);
     
     tableData.value = response.iteration_data.map((iteration: any) => ({
       iteration: iteration[0],
@@ -144,6 +145,7 @@ const handleSubmit = async (event : Event) => {
                 :key="'sol-' + index" 
                 v-model.number="solutionVector[index - 1]" 
                 type="number" 
+                step="any"
                 class="form-control mx-1 mb-2" 
                 style="width: 70px;"
               />
@@ -151,7 +153,7 @@ const handleSubmit = async (event : Event) => {
           </div>
         </div>
 
-        <div class="col">
+        <div class="col" v-if="selectedMethod === 'sor'">
           <div v-if="matrixSize" class="mt-3">
             <label>Enter the initial guess vector :</label>
             <div class="d-flex flex-column mb-2">

@@ -1,20 +1,13 @@
-from pydantic import BaseModel
-from typing import Literal, List
+from pydantic import BaseModel, Field
+from typing import Literal, List, Optional
 
 
-class SorInput(BaseModel):
+class SystemsEquationsInput(BaseModel):
     matrix_A: List[List[float]]
     solution_vector: List[float]
-    initial_guess: List[float]
-    omega: float
+    initial_guess: Optional[List[float]] = Field(default=None)
+    omega: Optional[float] = Field(default=None)
     tolerance: float
     max_iterations: int
     error_type: Literal['absolute', 'relative']
-
-
-class GaussSeidelInput(BaseModel):
-    matrix_A: List[List[float]]
-    solution_vector: List[float]
-    tolerance: float
-    max_iterations: int
-    error_type: Literal['absolute', 'relative']
+    method: Literal['sor', 'gauss-seidel', 'jacobi']

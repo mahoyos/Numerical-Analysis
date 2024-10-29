@@ -4,9 +4,9 @@ const API_URL: string = import.meta.env.VITE_API_URL as string;
 
 class SystemsEquationsService {
 
-  async postSorData(formData: any): Promise<any> {
+  async postSystemsEquationsData(formData: any): Promise<any> {
     try {
-      const response = await axios.post(API_URL + 'sor', formData, {
+      const response = await axios.post(API_URL + 'systems-equations', formData, {
         headers: {
           'Content-Type': 'application/json'
         }

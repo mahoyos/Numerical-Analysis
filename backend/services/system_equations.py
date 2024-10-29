@@ -31,7 +31,7 @@ class SystemEquationsService:
             iteration_data.append([iteration_counter, x_new.tolist(), error])
 
         result = {
-            "root": x.tolist(), 
+            "root": x.tolist(),
             "iteration_data": iteration_data
         }
 
@@ -41,37 +41,31 @@ class SystemEquationsService:
     def gauss_seidel_service(
         matrix_A: List[List[float]],
         solution_vector: List[float],
-        initial_guess: List[float],
         tolerance: float,
         max_iterations: int,
         error_type: str
     ) -> Dict[str, Any]:
         n = len(matrix_A)
-        x = initial_guess.copy()
+        x = np.zeros(len(matrix_A))
         iteration_data = []
-        
+
         for iteration_counter in range(max_iterations):
             x_old = x.copy()
-            
+
             for i in range(n):
                 sum1 = sum(matrix_A[i][j] * x[j] for j in range(i))
                 sum2 = sum(matrix_A[i][j] * x_old[j] for j in range(i + 1, n))
                 x[i] = (solution_vector[i] - sum1 - sum2) / matrix_A[i][i]
-            
+
             error = np.linalg.norm(x - x_old, np.inf) / np.linalg.norm(x, np.inf)
-            iteration_data.append([iteration_counter + 1, x.copy(), error])
-            
-            print(f"Iteración {iteration_counter + 1}:")
-            print(f"x = {x}")
-            print(f"Error relativo = {error}\n")
-            
+            iteration_data.append([iteration_counter, x.copy().tolist(), error])
+
             if error < tolerance:
                 break
 
         result = {
-            "root": x,
+            "root": x.tolist(),
             "iteration_data": iteration_data,
-            "iterations": iteration_counter + 1
         }
 
         return result
