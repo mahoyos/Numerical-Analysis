@@ -10,3 +10,11 @@ class SorInput(BaseModel):
     tolerance: float
     max_iterations: int
     error_type: Literal['absolute', 'relative']
+
+
+class GaussSeidelInput(BaseModel):
+    matrix_A: List[List[float]]
+    solution_vector: List[float]
+    tolerance: float
+    max_iterations: int
+    error_type: Literal['absolute', 'relative']
