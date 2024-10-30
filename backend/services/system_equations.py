@@ -69,3 +69,33 @@ class SystemEquationsService:
         }
 
         return result
+    
+    @staticmethod
+    def jacobi_service(
+        matrix_A: List[List[float]],
+        solution_vector: List[float],
+        initial_guess: List[float],
+        tolerance: float,
+        max_iterations: int,
+        error_type: str
+    ) -> Dict[str, Any]:
+        x = np.array(initial_guess)
+        iteration_data = []
+        
+        matrix_D = np.diag(np.diag(matrix_A))
+        matrix_LU = matrix_A - matrix_D
+        iteration_counter = 0
+        error = tolerance + 1  
+        while error > tolerance and iteration_counter < max_iterations:
+            x_new = np.linalg.inv(matrix_D) @ (np.array(solution_vector) - matrix_LU @ x)
+            error = np.linalg.norm(x_new - x, ord=np.inf) / np.linalg.norm(x_new, ord=np.inf)
+            x = x_new
+            iteration_counter += 1
+            iteration_data.append([iteration_counter, x.tolist(), error])
+
+        result = {
+            "root": x.tolist(), 
+            "iteration_data": iteration_data,
+        }
+
+        return result
