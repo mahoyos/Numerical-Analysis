@@ -3,6 +3,7 @@ import { ref, watch } from 'vue';
 import BreadCrumb from '../components/BreadCrumb.vue';
 import SystemsEquationsService from '../services/SystemsEquationsService';
 import Table from '../components/SystemsEquationsDataTable.vue';
+import LineGraph from '../components/LineGraph.vue';
 
 let breadCrumbList = [
   {
@@ -174,6 +175,12 @@ const handleSubmit = async (event : Event) => {
     </form>
   </div>
   <Table :tableData="tableData" />
+  <LineGraph 
+    v-if="matrixSize === 2" 
+    :matrixValues="matrixValues" 
+    :solutionVector="solutionVector" 
+    :matrixSize="matrixSize" 
+  />
 </template>
 
 <style scoped></style>
