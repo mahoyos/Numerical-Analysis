@@ -5,7 +5,7 @@ import sympy as sp
 
 class InterpolationService:
     @staticmethod
-    def newton_service(x_points: List, y_points: List, error_type: str):
+    def newton_service(x_points: List, y_points: List):
         n = len(x_points)
 
         divided_difference_table = np.zeros((n, n + 1))
@@ -32,7 +32,7 @@ class InterpolationService:
         return polinom
     
     @staticmethod
-    def spline_service(x_points: List, y_points: List, degree: int, error_type: str):
+    def spline_service(x_points: List, y_points: List, degree: int):
         num_points = len(x_points)
         system_matrix = np.zeros(((degree + 1) * (num_points - 1), (degree + 1) * (num_points - 1)))
         solution_vector = np.zeros((degree + 1) * (num_points - 1))

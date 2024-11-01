@@ -60,6 +60,13 @@ function hideSidebar() {
       </router-link>
     </li>
 
+    <li class="nav-item">
+      <router-link to="/interpolations" class="nav-link pad-0">
+        <i class="fas fa-fw fa-chart-bar"></i>
+        <span>Interpolations</span>
+      </router-link>
+    </li>
+
     <hr class="sidebar-divider my-0 hr-nav-top mt-2">
 
     <div class="text-center d-none d-md-inline mt-2">

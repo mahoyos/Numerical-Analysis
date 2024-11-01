@@ -15,7 +15,6 @@ async def interpolation_route(input_data: InterpolationInput) -> Dict[str, Any]:
         result = InterpolationService.newton_service(
             input_data.x_points,
             input_data.y_points,
-            input_data.error_type,
         )
 
         result = {"polynom": str(result)}
@@ -24,7 +23,6 @@ async def interpolation_route(input_data: InterpolationInput) -> Dict[str, Any]:
             input_data.x_points,
             input_data.y_points,
             input_data.degree,
-            input_data.error_type,
         )
 
         result = {"polynom": str(result)}

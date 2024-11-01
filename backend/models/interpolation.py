@@ -3,8 +3,7 @@ from typing import Literal, List, Optional
 
 
 class InterpolationInput(BaseModel):
+    method: Literal['newton', 'spline']
     x_points: List[float]
     y_points: List[float]
-    error_type: Literal['absolute', 'relative']
-    method: Literal['newton', 'spline']
-    degree: Optional[int]
+    degree: Optional[int] = None
