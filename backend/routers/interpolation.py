@@ -19,6 +19,15 @@ async def interpolation_route(input_data: InterpolationInput) -> Dict[str, Any]:
         )
 
         result = {"polynom": str(result)}
+    elif method == "spline":
+        result = InterpolationService.spline_service(
+            input_data.x_points,
+            input_data.y_points,
+            input_data.degree,
+            input_data.error_type,
+        )
+
+        result = {"polynom": str(result)}
     else:
         return {"error": "Invalid method specified."}
     return result
