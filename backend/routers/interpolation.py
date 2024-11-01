@@ -9,10 +9,10 @@ interpolation_router = APIRouter()
 
 
 @interpolation_router.post("/interpolation")
-async def systems_equations_route(input_data: InterpolationInput) -> Dict[str, Any]:
+async def interpolation_route(input_data: InterpolationInput) -> Dict[str, Any]:
     method = input_data.method
     if method == "newton":
-        result = InterpolationService.newton_server(
+        result = InterpolationService.newton_service(
             input_data.x_points,
             input_data.y_points,
             input_data.error_type,

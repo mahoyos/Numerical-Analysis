@@ -5,7 +5,7 @@ import sympy as sp
 
 class InterpolationService:
     @staticmethod
-    def newton_server(x_points: List, y_points: List, error_type: str):
+    def newton_service(x_points: List, y_points: List, error_type: str):
         n = len(x_points)
 
         divided_difference_table = np.zeros((n, n + 1))
