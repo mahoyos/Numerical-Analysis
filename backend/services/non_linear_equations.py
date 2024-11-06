@@ -47,7 +47,7 @@ class NonLinearEquationsService:
             raise MaxIterationsReachedError()
         if error > tolerance:
             raise ToleranceNotMetError()
-        if f_value != 0:
+        if f_value == 0:
             raise FunctionZeroValueError()
 
         result = {
@@ -87,14 +87,15 @@ class NonLinearEquationsService:
                 #error = abs(x_new - x)
             x = x_new
             iteration_data.append((iteration_count, x, f_value, error))
+            print(iteration_data)
 
         if iteration_count >= max_iterations:
             raise MaxIterationsReachedError()
         if error > tolerance:
             raise ToleranceNotMetError()
-        if f_value != 0:
+        if f_value == 0:
             raise FunctionZeroValueError()
-        if f_derivative_value != 0:
+        if f_derivative_value == 0:
             raise DerivativeZeroValueError()
 
         result = {
@@ -142,9 +143,9 @@ class NonLinearEquationsService:
             raise MaxIterationsReachedError()
         if error > tolerance:
             raise ToleranceNotMetError()
-        if f_value != 0:
+        if f_value == 0:
             raise FunctionZeroValueError()
-        if f_derivative_value != 0:
+        if f_derivative_value == 0:
             raise DerivativeZeroValueError()
 
         result = {
@@ -267,7 +268,7 @@ class NonLinearEquationsService:
             raise MaxIterationsReachedError()
         if error > tolerance:
             raise ToleranceNotMetError()
-        if f_mid != 0:
+        if f_mid == 0:
             raise FunctionZeroValueError()
 
         result = {
