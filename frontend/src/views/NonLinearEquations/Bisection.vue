@@ -63,13 +63,30 @@ const handleSubmit = async (event: any) => {
 
   <div class="card shadow mb-4">
     <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Bisection Method Form Input</h6>
+    </div>
+    <div class="card-body">
+      <ul>
+        <li class="mt-3"><b>Left Bound: </b>Starting point on the left side of the interval for the root search.</li>
+        <li class="mt-3"><b>Right Bound: </b>Starting point on the right side of the interval for the root search.</li>
+        <li class="mt-3"><b>Tolerance: </b>Acceptable error margin for the root approximation.</li>
+        <li class="mt-3"><b>Error Type: </b>Defines the error calculation method (e.g., absolute or relative).</li>
+        <li class="mt-3"><b>Max Iterations: </b>Maximum number of iterations allowed to find the root.</li>
+        <li class="mt-3"><b>Function Expression: </b>The mathematical function in which the root is being sought.</li>
+      </ul>
+    </div>
+    
+  </div>
+
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
       <h6 class="m-0 font-weight-bold text-primary">Bisection Method Form</h6>
     </div>
     <div class="card-body">
       <form @submit="handleSubmit">
         <div class="row">
           <div class="col">
-            <label for="leftBound">Left Bound</label>
+            <label >Left Bound</label>
             <input type="number" class="form-control" id="leftBound" name="leftBound" placeholder="Enter left bound" step="0.0001" required>
           </div>
           <div class="col">
@@ -110,3 +127,5 @@ const handleSubmit = async (event: any) => {
   <Table v-if="messageType === 'success'" :tableData="tableData" />
   <Chart v-if="solutionPoint !== null" :functionExpression="chartData.function_expression" :solution="chartData.solution" />
 </template>
+
+

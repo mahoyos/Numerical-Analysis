@@ -57,6 +57,15 @@ const handleSubmit = async (event: Event) => {
 
   <div class="card shadow mb-4">
     <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Interpolations Form Input</h6>
+    </div>
+    <div class="card-body">
+      <ul>
+        <li class="mt-3"><b>(n): </b>Represents the number of (𝑥,𝑦) data points to be provided for interpolation.</li>
+        <li class="mt-3"><b>Error Type: </b>Defines the error calculation method (e.g., absolute or relative).</li>
+      </ul>
+    </div>
+    <div class="card-header py-3">
       <h6 class="m-0 font-weight-bold text-primary">Interpolations</h6>
     </div>
     <form @submit="handleSubmit" class="p-4">
