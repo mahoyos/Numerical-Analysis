@@ -1,4 +1,4 @@
-from typing import Dict, Any, List
+from typing import List
 import numpy as np
 import sympy as sp
 
@@ -30,13 +30,13 @@ class InterpolationService:
         polinom = sp.simplify(polinom)
 
         return polinom
-    
+
     @staticmethod
     def spline_service(x_points: List, y_points: List, degree: int):
         num_points = len(x_points)
         system_matrix = np.zeros(((degree + 1) * (num_points - 1), (degree + 1) * (num_points - 1)))
         solution_vector = np.zeros((degree + 1) * (num_points - 1))
-        
+
         if degree == 1:
             row_index = 0
             for i in range(num_points - 1):
@@ -44,7 +44,7 @@ class InterpolationService:
                 system_matrix[row_index, i * 2 + 1] = 1
                 solution_vector[row_index] = y_points[i]
                 row_index += 1
-            
+
             for i in range(1, num_points):
                 system_matrix[row_index, (i - 1) * 2] = x_points[i]
                 system_matrix[row_index, (i - 1) * 2 + 1] = 1
@@ -54,21 +54,21 @@ class InterpolationService:
         elif degree == 2:
             row_index = 0
             squared_x_points = np.array(x_points) ** 2
-            
+
             for i in range(num_points - 1):
                 system_matrix[row_index, i * 3] = squared_x_points[i]
                 system_matrix[row_index, i * 3 + 1] = x_points[i]
                 system_matrix[row_index, i * 3 + 2] = 1
                 solution_vector[row_index] = y_points[i]
                 row_index += 1
-            
+
             for i in range(1, num_points):
                 system_matrix[row_index, (i - 1) * 3] = squared_x_points[i]
                 system_matrix[row_index, (i - 1) * 3 + 1] = x_points[i]
                 system_matrix[row_index, (i - 1) * 3 + 2] = 1
                 solution_vector[row_index] = y_points[i]
                 row_index += 1
-            
+
             for i in range(1, num_points - 1):
                 system_matrix[row_index, (i - 1) * 3] = 2 * x_points[i]
                 system_matrix[row_index, (i - 1) * 3 + 1] = 1
@@ -79,9 +79,9 @@ class InterpolationService:
 
             system_matrix[row_index, 0] = 2
             solution_vector[row_index] = 0
-        
+
         coefficients = np.linalg.solve(system_matrix, solution_vector)
         coefficients = np.where(np.abs(coefficients) < 1e-10, 0, coefficients)
 
         coefficients_table = coefficients.reshape((num_points - 1, degree + 1))
-        return coefficients_table  
+        return coefficients_table
