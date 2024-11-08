@@ -75,8 +75,8 @@ const handleSubmit = async (event: any) => {
         <li class="mt-3"><b>Tolerance: </b>Acceptable error margin for the root approximation.</li>
         <li class="mt-3"><b>Error Type: </b>Defines the error calculation method (e.g., absolute or relative).</li>
         <li class="mt-3"><b>Max Iterations: </b>Maximum number of iterations allowed to find the root.</li>
-        <li class="mt-3"><b>Function Expression: </b>The mathematical function in which the root is being sought.</li>
-        <li class="mt-3"><b>G Expression: </b>The transformation function 𝑔(𝑥) used to iterate towards the fixed point.</li>
+        <li class="mt-3"><b>Function Expression: </b>The mathematical function where the root is being sought, written in Python syntax (e.g., `**` for powers) without quotes.</li>
+        <li class="mt-3"><b>G Expression: </b>The transformation function 𝑔(𝑥) used to iterate towards the fixed point, written in Python syntax (e.g., `**` for powers) without quotes.</li>
       </ul>
     </div>
     

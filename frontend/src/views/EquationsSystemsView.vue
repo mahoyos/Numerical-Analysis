@@ -80,6 +80,8 @@ const handleSubmit = async (event : Event) => {
         <li class="mt-3"><b>Error Type: </b>Defines the error calculation method (e.g., absolute or relative).</li>
         <li class="mt-3"><b>Max Iterations: </b>Maximum number of iterations allowed to find the root.</li>
         <li class="mt-3"><b>Matrix Size: </b>The number of equations and unknowns in the system.</li>
+        <li class="mt-3"><b>Matrix (nxn): </b>The 𝑛×𝑛 matrix is a square matrix with 𝑛 rows and 𝑛 columns, intended to store specific values related to the problem</li>
+        <li class="mt-3"><b>Solution Vector: </b>Is an 𝑛-dimensional vector that holds the solution values associated with each row or column in the 𝑛×𝑛 matrix, representing outcomes from calculations or optimizations based on the matrix data.</li>
       </ul>
     </div>
 
