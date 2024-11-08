@@ -64,6 +64,25 @@ const handleSubmit = async (event: any) => {
 <template>
   <BreadCrumb :breadCrumbList="breadCrumbList" />
 
+
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Fixed Point Method Form Input</h6>
+    </div>
+    <div class="card-body">
+      <ul>
+        <li class="mt-3"><b>Initial Guess: </b>Starting value for the iteration to approximate the root.</li>
+        <li class="mt-3"><b>Tolerance: </b>Acceptable error margin for the root approximation.</li>
+        <li class="mt-3"><b>Error Type: </b>Defines the error calculation method (e.g., absolute or relative).</li>
+        <li class="mt-3"><b>Max Iterations: </b>Maximum number of iterations allowed to find the root.</li>
+        <li class="mt-3"><b>Function Expression: </b>The mathematical function in which the root is being sought.</li>
+        <li class="mt-3"><b>G Expression: </b>The transformation function 𝑔(𝑥) used to iterate towards the fixed point.</li>
+      </ul>
+    </div>
+    
+  </div>
+
+
   <div class="card shadow mb-4">
     <div class="card-header py-3">
       <h6 class="m-0 font-weight-bold text-primary">Fixed Point Method Form</h6>
@@ -73,7 +92,7 @@ const handleSubmit = async (event: any) => {
         <div class="row">
           <div class="col">
             <label for="initialGuess">Initial Guess</label>
-            <input type="text" class="form-control" id="initialGuess" name="initialGuess" placeholder="Enter initial guess">
+            <input type="number" class="form-control" id="initialGuess" name="initialGuess" placeholder="Enter initial guess" step="any">
           </div>
           <div class="col">
             <label for="maxIterations">Max Iterations</label>
@@ -83,7 +102,18 @@ const handleSubmit = async (event: any) => {
         <div class="row mt-3">
           <div class="col">
             <label for="tolerance">Tolerance</label>
-            <input type="text" class="form-control" id="tolerance" name="tolerance" placeholder="Enter tolerance" step="0.0001">
+            <input 
+              type="number" 
+              class="form-control" 
+              id="tolerance" 
+              name="tolerance" 
+              placeholder="Enter tolerance" 
+              step="any" 
+              min="0.0000001" 
+              required
+              oninvalid="this.setCustomValidity('Tolerance must be a positive number.')"
+              oninput="this.setCustomValidity('')"
+            >
           </div>
           <div class="col">
             <label for="errorType">Error Type</label>
@@ -96,11 +126,11 @@ const handleSubmit = async (event: any) => {
         <div class="row mt-3">
           <div class="col">
             <label for="functionExpression">Function Expression</label>
-            <input type="text" class="form-control" id="functionExpression" name="functionExpression" placeholder="Enter function expression">
+            <input type="text" class="form-control" id="functionExpression" name="functionExpression" placeholder="Enter function expression" />
           </div>
           <div class="col">
             <label for="gExpression">G Expression</label>
-            <input type="text" class="form-control" id="gExpression" name="gExpression" placeholder="Enter g expression">
+            <input type="text" class="form-control" id="gExpression" name="gExpression" placeholder="Enter g expression"/>
           </div>
         </div>
         <button type="submit" class="btn btn-primary mt-3">Submit</button>
