@@ -85,3 +85,31 @@ class InterpolationService:
 
         coefficients_table = coefficients.reshape((num_points - 1, degree + 1))
         return coefficients_table
+
+    @staticmethod
+    def vandermonde_service(x_points: List[float], y_points: List[float]):
+        n = len(x_points)
+        A = np.vander(x_points, n)
+        coefficients = np.linalg.solve(A, y_points)
+        x_sym = sp.symbols('x')
+        polinom = sum(c * x_sym**i for i, c in enumerate(reversed(coefficients)))
+        polinom = sp.simplify(polinom)
+        return polinom
+
+    @staticmethod
+    def lagrange_service(x_points: List[float], y_points: List[float]):
+        x = sp.symbols('x')
+        polinom = 0
+        n = len(x_points)
+
+        for i in range(n):
+            L_i = 1
+
+            for j in range(n):
+
+                if i != j:
+                    L_i *= (x - x_points[j]) / (x_points[i] - x_points[j])
+            polinom += y_points[i] * L_i
+
+        polinom = sp.simplify(polinom)
+        return polinom

@@ -24,9 +24,18 @@ const messageType = ref<string | null>(null);
 const handleSubmit = async (event: any) => {
   event.preventDefault();
   let formData = new FormData(event.target);
+  let leftBound = parseFloat(formData.get('leftBound') as string);
+  let rightBound = parseFloat(formData.get('rightBound') as string);
+
+  if (leftBound >= rightBound) {
+    messageType.value = 'error';
+    message.value = 'Left Bound must be less than Right Bound.';
+    return;
+  }
+
   const data = {
-    left_bound: parseFloat(formData.get('leftBound') as string),
-    right_bound: parseFloat(formData.get('rightBound') as string),
+    left_bound: leftBound,
+    right_bound: rightBound,
     tolerance: parseFloat(formData.get('tolerance') as string),
     max_iterations: parseInt(formData.get('maxIterations') as string, 10),
     function_expression: formData.get('functionExpression') as string,
@@ -63,45 +72,72 @@ const handleSubmit = async (event: any) => {
 
   <div class="card shadow mb-4">
     <div class="card-header py-3">
-      <h6 class="m-0 font-weight-bold text-primary">False Position Method Form</h6>
+      <h6 class="m-0 font-weight-bold text-primary">False Position Method Form Input</h6>
     </div>
     <div class="card-body">
-      <form @submit="handleSubmit">
-        <div class="row">
-          <div class="col">
-            <label for="lowerBound">Left Bound</label>
-            <input type="number" class="form-control" id="leftBound" name="leftBound" placeholder="Enter left bound">
+      <ul>
+        <li class="mt-3"><b>Left Bound: </b>Starting point on the left side of the interval for the root search.</li>
+        <li class="mt-3"><b>Right Bound: </b>Starting point on the right side of the interval for the root search.</li>
+        <li class="mt-3"><b>Tolerance: </b>Acceptable error margin for the root approximation.</li>
+        <li class="mt-3"><b>Error Type: </b>Defines the error calculation method (e.g., absolute or relative).</li>
+        <li class="mt-3"><b>Max Iterations: </b>Maximum number of iterations allowed to find the root.</li>
+        <li class="mt-3"><b>Function Expression: </b>The mathematical function in which the root is being sought.</li>
+      </ul>
+    </div>
+  </div>
+
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">False Position Method Form</h6>
+      </div>
+      <div class="card-body">
+        <form @submit="handleSubmit">
+          <div class="row">
+            <div class="col">
+              <label for="lowerBound">Left Bound</label>
+              <input type="number" class="form-control" id="leftBound" name="leftBound" placeholder="Enter left bound" step="any">
+            </div>
+            <div class="col">
+              <label for="rightBound">Right Bound</label>
+              <input type="number" class="form-control" id="rightBound" name="rightBound" placeholder="Enter right bound" step="any">
+            </div>
           </div>
-          <div class="col">
-            <label for="rightBound">Right Bound</label>
-            <input type="number" class="form-control" id="rightBound" name="rightBound" placeholder="Enter right bound">
+          <div class="row mt-3">
+            <div class="col">
+              <label for="tolerance">Tolerance</label>
+              <input 
+                type="number" 
+                class="form-control" 
+                id="tolerance" 
+                name="tolerance" 
+                placeholder="Enter tolerance" 
+                step="any" 
+                min="0.0000001" 
+                required
+                oninvalid="this.setCustomValidity('Tolerance must be a positive number.')"
+                oninput="this.setCustomValidity('')"
+              >
+            </div>
+            <div class="col">
+              <label for="errorType">Error Type</label>
+              <select class="form-control" id="errorType" name="errorType">
+                <option value="absolute">Absolute Error</option>
+                <option value="relative">Relative Error</option>
+              </select>
+            </div>
           </div>
-        </div>
-        <div class="row mt-3">
-          <div class="col">
-            <label for="tolerance">Tolerance</label>
-            <input type="number" class="form-control" id="tolerance" name="tolerance" placeholder="Enter tolerance" step="0.0001">
+          <div class="row mt-3">
+            <div class="col">
+              <label for="maxIterations">Max Iterations</label>
+              <input type="number" class="form-control" id="maxIterations" name="maxIterations" placeholder="Enter max iterations" min="1" step="1" oninvalid="this.setCustomValidity('Max Iterations must be a positive integer greater than zero.')" oninput="this.setCustomValidity('')">
+            </div>
+            <div class="col">
+              <label for="functionExpression">Function Expression</label>
+              <input type="text" class="form-control" id="functionExpression" name="functionExpression" placeholder="Enter function expression">
+            </div>
           </div>
-          <div class="col">
-            <label for="errorType">Error Type</label>
-            <select class="form-control" id="errorType" name="errorType">
-              <option value="absolute">Absolute Error</option>
-              <option value="relative">Relative Error</option>
-            </select>
-          </div>
-        </div>
-        <div class="row mt-3">
-          <div class="col">
-            <label for="maxIterations">Max Iterations</label>
-            <input type="number" class="form-control" id="maxIterations" name="maxIterations" placeholder="Enter max iterations">
-          </div>
-          <div class="col">
-            <label for="functionExpression">Function Expression</label>
-            <input type="text" class="form-control" id="functionExpression" name="functionExpression" placeholder="Enter function expression">
-          </div>
-        </div>
-        <button type="submit" class="btn btn-primary mt-3">Submit</button>
-      </form>
+          <button type="submit" class="btn btn-primary mt-3">Submit</button>
+        </form>
     </div>
   </div>
   <div v-if="message" class="alert" :class="{'alert-success': messageType === 'success', 'alert-danger': messageType === 'error'}">

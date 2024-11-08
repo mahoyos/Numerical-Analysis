@@ -26,6 +26,16 @@ async def interpolation_route(input_data: InterpolationInput) -> Dict[str, Any]:
         )
 
         result = {"polynom": str(result)}
+    elif method == "vandermonde":
+        result = InterpolationService.vandermonde_service(
+            input_data.x_points,
+            input_data.y_points,
+        )
+    elif method == "lagrange":
+        result = InterpolationService.lagrange_service(
+            input_data.x_points,
+            input_data.y_points,
+        )
     else:
         return {"error": "Invalid method specified."}
     return result
