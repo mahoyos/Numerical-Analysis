@@ -84,7 +84,17 @@ class InterpolationService:
         coefficients = np.where(np.abs(coefficients) < 1e-10, 0, coefficients)
 
         coefficients_table = coefficients.reshape((num_points - 1, degree + 1))
-        return coefficients_table
+
+        x_sym = sp.symbols('x')
+        polynomials = []
+        for i in range(num_points - 1):
+            if degree == 1:
+                polynom = coefficients_table[i, 0] * x_sym + coefficients_table[i, 1]
+            elif degree == 2:
+                polynom = coefficients_table[i, 0] * x_sym**2 + coefficients_table[i, 1] * x_sym + coefficients_table[i, 2]
+            polynomials.append(sp.simplify(polynom))
+
+        return polynomials
 
     @staticmethod
     def vandermonde_service(x_points: List[float], y_points: List[float]):
