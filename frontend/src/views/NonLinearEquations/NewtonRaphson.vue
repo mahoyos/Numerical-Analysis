@@ -38,13 +38,14 @@ const handleSubmit = async (event: any) => {
     const response = await NonLinearEquationsService.postNewtonRaphsonData(data);
     
     messageType.value = response.status;
-    message.value = response.error.message;
+    message.value = response.error?.message || response.message;
     
     if(response.status === 'success'){
-        tableData.value = response.iteration_data.map((iteration: any) => ({
+        tableData.value = response.iterations.map((iteration: any) => ({
         iteration: iteration[0],
-        values: iteration[1],
-        error: iteration[2],
+        value1: iteration[1],
+        value2: iteration[2],
+        value3: iteration[3],
         }));
         solutionPoint.value = response.root;
         chartData.value = {
@@ -54,6 +55,8 @@ const handleSubmit = async (event: any) => {
     }
   } catch (error) {
     console.error('Error posting form data:', error);
+    messageType.value = 'error';
+    message.value = 'An error occurred while processing your request';
   }
 };
 

@@ -45,8 +45,8 @@ const handleSubmit = async (event: any) => {
   try {
     const response = await NonLinearEquationsService.postFalsePositionData(data);
     
-    messageType.value = response.message_type;
-    message.value = response.message;
+    messageType.value = response.status;
+    message.value = response.error?.message || response.message;
 
     if(response.status === 'success'){
         tableData.value = response.iterations.map((iteration: any) => ({
@@ -63,6 +63,8 @@ const handleSubmit = async (event: any) => {
     }
   } catch (error) {
     console.error('Error posting form data:', error);
+    messageType.value = 'error';
+    message.value = 'An error occurred while processing your request';
   }
 };
 </script>
