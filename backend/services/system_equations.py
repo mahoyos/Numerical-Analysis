@@ -1,5 +1,6 @@
 from typing import Dict, Any, List
 import numpy as np
+from utils.error_type import ErrorType
 
 
 class SystemEquationsService:
@@ -25,7 +26,11 @@ class SystemEquationsService:
             matrix_T = np.linalg.inv(matrix_D - omega * matrix_L) @ ((1 - omega) * matrix_D + omega * matrix_U)
             matrix_C = omega * np.linalg.inv(matrix_D - omega * matrix_L) @ np.array(solution_vector)
             x_new = matrix_T @ x + matrix_C
-            error = np.linalg.norm(x_new - x, ord=np.inf)
+            if error_type == "relative":
+                error = ErrorType.relative_error_system_equations(x_new, x)
+            else:
+                error = ErrorType.absolute_error_system_equations(x_new, x)
+                
             x = x_new
             iteration_counter += 1
             iteration_data.append([iteration_counter, x_new.tolist(), error])
@@ -57,7 +62,11 @@ class SystemEquationsService:
                 sum2 = sum(matrix_A[i][j] * x_old[j] for j in range(i + 1, n))
                 x[i] = (solution_vector[i] - sum1 - sum2) / matrix_A[i][i]
 
-            error = np.linalg.norm(x - x_old, np.inf) / np.linalg.norm(x, np.inf)
+            if error_type == "relative":
+                error = ErrorType.relative_error_system_equations(x, x_old)
+            else:
+                error = ErrorType.absolute_error_system_equations(x, x_old)
+
             iteration_data.append([iteration_counter, x.copy().tolist(), error])
 
             if error < tolerance:
@@ -88,7 +97,11 @@ class SystemEquationsService:
         error = tolerance + 1
         while error > tolerance and iteration_counter < max_iterations:
             x_new = np.linalg.inv(matrix_D) @ (np.array(solution_vector) - matrix_LU @ x)
-            error = np.linalg.norm(x_new - x, ord=np.inf) / np.linalg.norm(x_new, ord=np.inf)
+            if error_type == "relative":
+                error = ErrorType.relative_error_system_equations(x_new, x)
+            else:
+                error = ErrorType.absolute_error_system_equations(x_new, x)
+
             x = x_new
             iteration_counter += 1
             iteration_data.append([iteration_counter, x.tolist(), error])
