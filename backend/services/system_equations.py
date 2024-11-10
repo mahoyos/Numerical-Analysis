@@ -31,7 +31,6 @@ class SystemEquationsService:
             else:
                 error = ErrorType.absolute_error_system_equations(x_new, x)
                 
-            #error = np.linalg.norm(x_new - x, ord=np.inf)
             x = x_new
             iteration_counter += 1
             iteration_data.append([iteration_counter, x_new.tolist(), error])
@@ -68,7 +67,6 @@ class SystemEquationsService:
             else:
                 error = ErrorType.absolute_error_system_equations(x, x_old)
 
-            #error = np.linalg.norm(x - x_old, np.inf) / np.linalg.norm(x, np.inf)
             iteration_data.append([iteration_counter, x.copy().tolist(), error])
 
             if error < tolerance:
@@ -104,7 +102,6 @@ class SystemEquationsService:
             else:
                 error = ErrorType.absolute_error_system_equations(x_new, x)
 
-            #error = np.linalg.norm(x_new - x, ord=np.inf) / np.linalg.norm(x_new, ord=np.inf)
             x = x_new
             iteration_counter += 1
             iteration_data.append([iteration_counter, x.tolist(), error])

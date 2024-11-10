@@ -36,10 +36,9 @@ class NonLinearEquationsService:
             iteration_count += 1
             if error_type == "relative":
                 error = ErrorType.relative_error_non_linear_equation(x_new, x)
-                #error = abs(x_new - x) / abs(x)
             else:
                 error = ErrorType.absolute_error_non_linear_equation(x_new, x)
-                #error = abs(x_new - x)
+
             x = x_new
             iteration_data.append((iteration_count, x, f_value, error))
 
@@ -81,10 +80,9 @@ class NonLinearEquationsService:
             iteration_count += 1
             if error_type == "relative":
                 error = ErrorType.relative_error_non_linear_equation(x_new, x)
-                #error = abs(x_new - x) / abs(x)
             else:
                 error = ErrorType.absolute_error_non_linear_equation(x_new, x)
-                #error = abs(x_new - x)
+
             x = x_new
             iteration_data.append((iteration_count, x, f_value, error))
             print(iteration_data)
@@ -132,10 +130,9 @@ class NonLinearEquationsService:
             iteration_count += 1
             if error_type == "relative":
                 error = ErrorType.relative_error_non_linear_equation(x_new, x)
-                #error = abs(x_new - x) / abs(x)
             else:
                 error = ErrorType.absolute_error_non_linear_equation(x_new, x)
-                #error = abs(x_new - x)
+
             x = x_new
             iteration_data.append((iteration_count, x, f_value, error))
 
@@ -185,10 +182,8 @@ class NonLinearEquationsService:
 
             if error_type == "relative":
                 error = ErrorType.relative_error_non_linear_equation(next_bound, root_approximation)
-                #error = abs(x_new - x) / abs(x)
             else:
                 error = ErrorType.absolute_error_non_linear_equation(next_bound, root_approximation)
-                #error = abs(x_new - x)
 
             if error <= tolerance:
                 break
@@ -256,10 +251,8 @@ class NonLinearEquationsService:
             f_mid = MathOperations.evaluate_function(function_expression, mid_point)
             if error_type == "relative":
                 error = ErrorType.relative_error_non_linear_equation(mid_point, prev_mid_point)
-                #error = abs(x_new - x) / abs(x)
             else:
                 error = ErrorType.absolute_error_non_linear_equation(mid_point, prev_mid_point)
-                #error = abs(x_new - x)
                 
             iteration_count += 1
             iteration_data.append((iteration_count, mid_point, f_mid, error))
