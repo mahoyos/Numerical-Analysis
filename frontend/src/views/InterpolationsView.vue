@@ -83,6 +83,8 @@ const handleSubmit = async (event: Event) => {
       <ul>
         <li class="mt-3"><b>(n): </b>Represents the number of (𝑥,𝑦) data points to be provided for interpolation.</li>
         <li class="mt-3"><b>Error Type: </b>Defines the error calculation method (e.g., absolute or relative).</li>
+        <li class="mt-3"><b>X Vector: </b>This vector contains the 𝑥𝑖 points where the function values are known. These are the independent values that serve as reference points for building the interpolating function or polynomial.</li>
+        <li class="mt-3"><b>Y Vector: </b> This vector contains the 𝑦𝑖 values corresponding to each 𝑥𝑖 point. These are the dependent function values that to be interpolate. </li>
       </ul>
     </div>
   </div>
