@@ -38,7 +38,7 @@ const handleSubmit = async (event: any) => {
     const response = await NonLinearEquationsService.postMultipleRootsData(data);
     
     messageType.value = response.status;
-    message.value = response.error.message;
+    message.value = response.error?.message || response.message;
     
     if(response.status === 'success'){
         tableData.value = response.iterations.map((iteration: any) => ({
@@ -55,6 +55,8 @@ const handleSubmit = async (event: any) => {
     }
   } catch (error) {
     console.error('Error posting form data:', error);
+    messageType.value = 'error';
+    message.value = 'An error occurred while processing your request';
   }
 };
 
