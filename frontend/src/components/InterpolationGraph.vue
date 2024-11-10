@@ -27,7 +27,10 @@
   Chart.register(...registerables, zoomPlugin);
   
   const props = defineProps<{
-    polynom: string
+    polynom: string,
+    method?: string,
+    xPoints: number[],
+    yPoints: number[]
   }>();
   
   const chartCanvas = ref<HTMLCanvasElement | null>(null);
@@ -38,12 +41,53 @@
       console.error("El polinomio no está definido.");
       return [];
     }
+
+    if (props.method === 'spline') {
+      const functions = polynom.slice(1, -1).split(',');
+      const data = [];
+      
+      for (let i = 0; i < functions.length; i++) {
+        const xStart = i + 1;
+        const xEnd = i + 2;
+        
+        for (let x = xStart; x <= xEnd; x += 0.01) {
+          try {
+            const y = eval(functions[i].trim().replace(/x/g, `(${x})`));
+            data.push({ x, y });
+          } catch (error) {
+            console.error(`Error evaluating function at x=${x}:`, error);
+          }
+        }
+      }
+      return data;
+    }
+
     const data = [];
     for (let x = -100; x <= 100; x += 0.1) {
-      const y = eval(polynom.replace(/x/g, `(${x})`)); // Evaluar la función
+      const y = eval(polynom.replace(/x/g, `(${x})`));
       data.push({ x, y });
     }
     return data;
+  };
+  
+  const generatePoints = (polynom: string) => {
+    if (props.method === 'spline') {
+      const points = [];
+      const functions = polynom.slice(1, -1).split(',');
+      
+      // Generate points for each interval (from 1 to functions.length + 1)
+      for (let i = 1; i <= functions.length + 1; i++) {
+        try {
+          // Evaluate the function at each integer point
+          const y = eval(functions[i-1]?.trim().replace(/x/g, `(${i})`)) || 0;
+          points.push({ x: i, y });
+        } catch (error) {
+          console.error(`Error evaluating point at x=${i}:`, error);
+        }
+      }
+      return points;
+    }
+    return [];
   };
   
   const createChart = () => {
@@ -96,6 +140,19 @@
             borderColor: 'red',
             fill: false,
             order: 1,
+          },
+          {
+            label: 'Points',
+            data: props.xPoints.map((x, index) => ({
+              x: x,
+              y: props.yPoints[index]
+            })),
+            backgroundColor: 'blue',
+            borderColor: 'blue',
+            pointRadius: 5,
+            pointHoverRadius: 7,
+            showLine: false,
+            order: 0,
           }
         ];
   

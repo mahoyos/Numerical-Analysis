@@ -19,6 +19,7 @@ const matrixSize = ref(2);
 const xVector = ref<number[]>([]);
 const yVector = ref<number[]>([]);
 const response = ref<any>(null);
+const errorMessage = ref('');
 
 const initializeMatrixAndVector = (size: number) => {
   xVector.value = Array(size).fill(0);
@@ -31,8 +32,26 @@ watch(matrixSize, (newSize) => {
 
 initializeMatrixAndVector(matrixSize.value);
 
+const hasRepeatedXValues = (xValues: number[]): boolean => {
+  const uniqueValues = new Set(xValues);
+  return uniqueValues.size !== xValues.length;
+};
+
 const handleSubmit = async (event: Event) => {
   event.preventDefault();
+  errorMessage.value = '';
+
+  if (hasRepeatedXValues(xVector.value)) {
+    errorMessage.value = 'X values must be unique. Please check for repeated values.';
+    return;
+  }
+
+  if (selectedMethod.value === 'spline' && degree.value !== null) {
+    if (matrixSize.value - degree.value !== 1) {
+      errorMessage.value = 'For spline interpolation, n - degree must equal 1';
+      return;
+    }
+  }
 
   const data: any = {
     method: selectedMethod.value,
@@ -46,6 +65,7 @@ const handleSubmit = async (event: Event) => {
 
   try {
     response.value = await InterpolationsService.postInterpolationsData(data);
+    //initializeMatrixAndVector(matrixSize.value);
   } catch (error) {
     console.log('Error posting form data:', error);
   }
@@ -153,11 +173,20 @@ const handleSubmit = async (event: Event) => {
           </div>
         </div>
         
+        <div v-if="errorMessage" class="alert alert-danger mt-3">
+          {{ errorMessage }}
+        </div>
         <button type="submit" class="btn btn-primary mt-3">Submit</button>
       </form>
     </div>
 
-    <InterpolationGraph v-if="response" :polynom="response.polynom" />
+    <InterpolationGraph 
+      v-if="response" 
+      :polynom="response.polynom" 
+      :method="selectedMethod"
+      :xPoints="xVector"
+      :yPoints="yVector"
+    />
 </template>
 
 <style scoped></style>
