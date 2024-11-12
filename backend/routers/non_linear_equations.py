@@ -4,7 +4,8 @@ from models.non_linear_equations import (
     MultipleRootsInput,
     NewtonRaphsonInput,
     FalsePositionInput,
-    BisectionInput
+    BisectionInput,
+    SecantInput,
 )
 from services.non_linear_equations import NonLinearEquationsService
 from typing import Dict, Any
@@ -65,6 +66,19 @@ async def false_position_route(input_data: FalsePositionInput) -> Dict[str, Any]
 @router.post("/bisection")
 async def bisection_route(input_data: BisectionInput) -> Dict[str, Any]:
     result = NonLinearEquationsService.bisection_service(
+        input_data.left_bound,
+        input_data.right_bound,
+        input_data.tolerance,
+        input_data.max_iterations,
+        input_data.function_expression,
+        input_data.error_type
+    )
+    return result
+
+
+@router.post("/secant")
+async def secant_route(input_data: SecantInput) -> Dict[str, Any]:
+    result = NonLinearEquationsService.secant_service(
         input_data.left_bound,
         input_data.right_bound,
         input_data.tolerance,

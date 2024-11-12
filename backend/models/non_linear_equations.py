@@ -43,3 +43,12 @@ class BisectionInput(BaseModel):
     max_iterations: int
     function_expression: str
     error_type: Literal['absolute', 'relative']
+
+
+class SecantInput(BaseModel):
+    left_bound: float
+    right_bound: float
+    tolerance: float
+    max_iterations: int
+    function_expression: str
+    error_type: Literal['absolute', 'relative']

@@ -253,7 +253,7 @@ class NonLinearEquationsService:
                 error = ErrorType.relative_error_non_linear_equation(mid_point, prev_mid_point)
             else:
                 error = ErrorType.absolute_error_non_linear_equation(mid_point, prev_mid_point)
-                
+
             iteration_count += 1
             iteration_data.append((iteration_count, mid_point, f_mid, error))
 
@@ -268,4 +268,57 @@ class NonLinearEquationsService:
             "root": mid_point,
             "iterations": iteration_data
         }
+        return result
+
+    @staticmethod
+    @NonLinearEquationsHandler.handle_response
+    def secant_service(
+        left_bound: float,
+        right_bound: float,
+        tolerance: float,
+        max_iterations: int,
+        function_expression: str,
+        error_type: str
+    ) -> Dict[str, Any]:
+        iteration_data = []
+
+        f_left = MathOperations.evaluate_function(function_expression, left_bound)
+        f_right = MathOperations.evaluate_function(function_expression, right_bound)
+
+        iteration_count = 0
+        error = 100
+        x_next = right_bound
+        function_current = f_right
+
+        iteration_data.append((iteration_count, x_next, function_current, error))
+
+        while error > tolerance and function_current != 0 and iteration_count < max_iterations:
+            x_next = right_bound - (f_right * (right_bound - left_bound) / (f_right - f_left))
+            function_current = MathOperations.evaluate_function(function_expression, x_next)
+
+            if error_type == "relative":
+                error = ErrorType.relative_error_non_linear_equation(x_next, right_bound)
+            else:
+                error = ErrorType.absolute_error_non_linear_equation(x_next, right_bound)
+
+            iteration_count += 1
+            iteration_data.append((iteration_count, x_next, function_current, error))
+
+            left_bound = right_bound
+            right_bound = x_next
+            f_left = f_right
+            f_right = function_current
+
+        if iteration_count >= max_iterations:
+            raise MaxIterationsReachedError()
+        if error > tolerance:
+            raise ToleranceNotMetError()
+        if function_current == 0:
+            raise FunctionZeroValueError()
+
+        result = {
+            "root": x_next,
+            "iterations": iteration_data
+        }
+
         return result
