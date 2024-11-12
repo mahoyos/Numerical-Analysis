@@ -8,6 +8,7 @@ import NewtonRaphsonView from '../views/NonLinearEquations/NewtonRaphson.vue';
 import MultipleRootsView from '../views/NonLinearEquations/MultipleRoots.vue';
 import FalsePositionView from '../views/NonLinearEquations/FalsePosition.vue';
 import BisectionView from '../views/NonLinearEquations/Bisection.vue';
+import SecantView from '../views/NonLinearEquations/Secant.vue';
 import InterpolationsView from '../views/InterpolationsView.vue';
 
 const router = createRouter({
@@ -52,6 +53,11 @@ const router = createRouter({
       path: '/bisection',
       name: 'bisection',
       component: BisectionView
+    },
+    {
+      path: '/secant',
+      name: 'secant',
+      component: SecantView
     },
     {
       path: '/interpolations',

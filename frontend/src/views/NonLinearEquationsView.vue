@@ -24,6 +24,7 @@ let breadCrumbList = [
       <router-link to="/false-position" class="btn btn-outline-primary">False Position</router-link>
       <router-link to="/newton-raphson" class="btn btn-outline-primary">Newton-Raphson</router-link>
       <router-link to="/multiple-roots" class="btn btn-outline-primary">Multiple Roots</router-link>
+      <router-link to="/secant" class="btn btn-outline-primary">Secant</router-link>
     </div>
   </div>
 </template>
