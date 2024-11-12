@@ -46,6 +46,11 @@ const handleSubmit = async (event: Event) => {
     return;
   }
 
+  if (selectedMethod.value === 'spline' && (!degree.value || ![1, 2].includes(degree.value))) {
+    errorMessage.value = 'For spline interpolation, degree must be either 1 or 2.';
+    return;
+  }
+
   const data: any = {
     method: selectedMethod.value,
     x_points: xVector.value,
@@ -98,14 +103,15 @@ const handleSubmit = async (event: Event) => {
         </div>
         
         <div class="form-group mt-3" v-if="selectedMethod === 'spline'">
-          <label for="degree">Enter the degree:</label>
+          <label for="degree">Enter the degree (1 or 2):</label>
           <input 
             type="number" 
             id="degree" 
             v-model="degree" 
             class="form-control" 
-            :min="1" 
-            placeholder="Enter the degree" 
+            :min="1"
+            :max="2"
+            placeholder="Enter the degree (1 or 2)" 
           />
         </div>
         
