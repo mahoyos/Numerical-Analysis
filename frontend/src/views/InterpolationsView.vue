@@ -46,13 +46,6 @@ const handleSubmit = async (event: Event) => {
     return;
   }
 
-  if (selectedMethod.value === 'spline' && degree.value !== null) {
-    if (matrixSize.value - degree.value !== 1) {
-      errorMessage.value = 'For spline interpolation, n - degree must equal 1';
-      return;
-    }
-  }
-
   const data: any = {
     method: selectedMethod.value,
     x_points: xVector.value,
