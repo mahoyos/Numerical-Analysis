@@ -285,25 +285,6 @@ code {
   padding: 0.75rem;
 }
 
-.card {
-  height: 100%;
-  margin: 0;
-}
-
-.card-body {
-  display: flex;
-  flex-direction: column;
-}
-
-.card-text {
-  flex-grow: 1;
-  margin-bottom: 1rem;
-}
-
-.btn {
-  align-self: flex-start;
-}
-
 .methods-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -313,24 +294,6 @@ code {
 
 .method-card {
   width: 100%;
-}
-
-.card {
-  height: 100%;
-}
-
-.card-body {
-  display: flex;
-  flex-direction: column;
-}
-
-.card-text {
-  flex-grow: 1;
-  margin-bottom: 1rem;
-}
-
-.btn {
-  align-self: flex-start;
 }
 
 /* Para pantallas pequeñas */

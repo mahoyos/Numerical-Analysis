@@ -68,126 +68,267 @@ const handleSubmit = async (event: Event) => {
     console.log('Error posting form data:', error);
   }
 };
+
+const methods = [
+  {
+    name: 'Newton',
+    description: 'Uses divided differences to construct an interpolating polynomial that passes through all given points.'
+  },
+  {
+    name: 'Lagrange',
+    description: 'Constructs polynomials using a linear combination of basis polynomials to interpolate given points.'
+  },
+  {
+    name: 'Spline',
+    description: 'Creates piecewise polynomial functions that interpolate points with smooth transitions between segments.'
+  },
+  {
+    name: 'Vandermonde',
+    description: 'Uses a matrix-based approach to find coefficients of the interpolating polynomial.'
+  }
+];
 </script>
 
 <template>
   <BreadCrumb :breadCrumbList="breadCrumbList" />
 
+  <!-- Introduction Card -->
   <div class="card shadow mb-4">
     <div class="card-header py-3">
-      <h6 class="m-0 font-weight-bold text-primary">Interpolations Form Input</h6>
+      <h4 class="m-0 font-weight-bold text-primary">Interpolation Methods</h4>
     </div>
     <div class="card-body">
-      <ul>
-        <li class="mt-3"><b>(n): </b>Represents the number of (𝑥,𝑦) data points to be provided for interpolation.</li>
-        <li class="mt-3"><b>Error Type: </b>Defines the error calculation method (e.g., absolute or relative).</li>
-        <li class="mt-3"><b>X Vector: </b>This vector contains the 𝑥𝑖 points where the function values are known. These are the independent values that serve as reference points for building the interpolating function or polynomial.</li>
-        <li class="mt-3"><b>Y Vector: </b> This vector contains the 𝑦𝑖 values corresponding to each 𝑥𝑖 point. These are the dependent function values that to be interpolate. </li>
-      </ul>
+      <p class="lead mb-4">
+        This section provides various numerical methods for interpolating data points.
+        Each method constructs a function that passes through given points, with different characteristics and applications.
+      </p>
+
+      <!-- Methods Cards -->
+      <div class="methods-grid">
+        <div v-for="method in methods" :key="method.name" class="method-card">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">{{ method.name }}</h5>
+              <p class="card-text">{{ method.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-    <div class="card shadow mb-4">
-      <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Interpolations</h6>
+  <!-- Input Format Card -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h5 class="m-0 font-weight-bold text-primary">Input Format Guide</h5>
+    </div>
+    <div class="card-body">
+      <p class="mb-4">
+        To use the interpolation methods, you'll need to provide the following inputs:
+      </p>
+      
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th width="20%">Input Field</th>
+              <th width="80%">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Number (n)</b></td>
+              <td>Represents the number of (𝑥,𝑦) data points to be provided for interpolation.</td>
+            </tr>
+            <tr>
+              <td><b>Error Type</b></td>
+              <td>Defines the error calculation method (absolute or relative).</td>
+            </tr>
+            <tr>
+              <td><b>X Vector</b></td>
+              <td>Contains the 𝑥ᵢ points where the function values are known. These are the independent values that serve as reference points for building the interpolating function.</td>
+            </tr>
+            <tr>
+              <td><b>Y Vector</b></td>
+              <td>Contains the 𝑦ᵢ values corresponding to each 𝑥ᵢ point. These are the dependent function values to be interpolated.</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <form @submit="handleSubmit" class="p-4">
-        <div class="form-group">
-          <label for="methodSelect">Choose a method:</label>
-          <select id="methodSelect" v-model="selectedMethod" class="form-control">
-            <option value="newton">Newton</option>
-            <option value="lagrange">Lagrange</option>
-            <option value="spline">Spline</option>
-            <option value="vandermonde">Vandermonde</option>
-          </select>
+
+      <div class="alert alert-info mt-3">
+        <i class="fas fa-info-circle me-2"></i>
+        Note: For spline interpolation, you'll need to specify the degree (1 or 2) of the piecewise polynomial functions.
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Card -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h5 class="m-0 font-weight-bold text-primary">Interpolation Calculator</h5>
+    </div>
+    <div class="card-body">
+      <form @submit="handleSubmit">
+        <!-- Method Selection -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <label class="form-label font-weight-bold" for="methodSelect">Method:</label>
+            <select 
+              id="methodSelect" 
+              v-model="selectedMethod" 
+              class="form-control form-select"
+            >
+              <option value="newton">Newton</option>
+              <option value="lagrange">Lagrange</option>
+              <option value="spline">Spline</option>
+              <option value="vandermonde">Vandermonde</option>
+            </select>
+          </div>
+
+          <div class="col-md-6" v-if="selectedMethod === 'spline'">
+            <label class="form-label font-weight-bold" for="degree">Degree:</label>
+            <input 
+              type="number" 
+              id="degree" 
+              v-model="degree" 
+              class="form-control" 
+              :min="1"
+              :max="2"
+              placeholder="Enter degree (1 or 2)" 
+            />
+          </div>
         </div>
-        
-        <div class="form-group mt-3" v-if="selectedMethod === 'spline'">
-          <label for="degree">Enter the degree (1 or 2):</label>
-          <input 
-            type="number" 
-            id="degree" 
-            v-model="degree" 
-            class="form-control" 
-            :min="1"
-            :max="2"
-            placeholder="Enter the degree (1 or 2)" 
-          />
-        </div>
-        
-        <div class="row mt-3">
-          <div class="col">
-            <label for="matrixSize">Enter a number (n):</label>
-          <input 
-            type="number" 
-            id="matrixSize" 
-            v-model="matrixSize" 
-            class="form-control" 
-            :min="2" 
-            step="1"
-            placeholder="Enter a number" 
+
+        <!-- Size and Error Type -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <label class="form-label font-weight-bold" for="matrixSize">Number of points (n):</label>
+            <input 
+              type="number" 
+              id="matrixSize" 
+              v-model="matrixSize" 
+              class="form-control" 
+              :min="2" 
+              step="1"
+              placeholder="Enter number of points" 
             />
           </div>
 
-          <div class="col">
-              <label for="errorType">Error Type</label>
-              <select class="form-control" id="errorType" name="errorType">
-                <option value="absolute">Absolute Error</option>
-                <option value="relative">Relative Error</option>
+          <div class="col-md-6">
+            <label class="form-label font-weight-bold" for="errorType">Error Type:</label>
+            <select class="form-control form-select" id="errorType" name="errorType">
+              <option value="absolute">Absolute Error</option>
+              <option value="relative">Relative Error</option>
             </select>
           </div>
         </div>
 
-        <div class="row mt-3">
-          <div class="col">
-            <div v-if="matrixSize" class="mt-3">
-              <label>Enter X vector:</label>
-              <div class="d-flex flex-column mb-2">
-                <input 
-                  v-for="index in matrixSize" 
-                  :key="'vector1-' + index" 
-                  v-model.number="xVector[index - 1]"
-                  type="number" 
-                  step="any"
-                  class="form-control mx-1 mb-2" 
-                  style="width: 70px;"
-                />
-              </div>
+        <!-- Vectors Input -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <label class="form-label font-weight-bold">X Vector:</label>
+            <div class="vector-inputs">
+              <input 
+                v-for="index in matrixSize" 
+                :key="'x-' + index" 
+                v-model.number="xVector[index - 1]"
+                type="number" 
+                step="any"
+                class="form-control mb-2" 
+                :placeholder="'x' + index"
+              />
             </div>
           </div>
 
-          <div class="col">
-            <div v-if="matrixSize" class="mt-3">
-              <label>Enter Y vector:</label>
-              <div class="d-flex flex-column mb-2">
-                <input 
-                  v-for="index in matrixSize" 
-                  :key="'vector2-' + index" 
-                  v-model.number="yVector[index - 1]"
-                  type="number" 
-                  step="any"
-                  class="form-control mx-1 mb-2" 
-                  style="width: 70px;"
-                />
-              </div>
+          <div class="col-md-6">
+            <label class="form-label font-weight-bold">Y Vector:</label>
+            <div class="vector-inputs">
+              <input 
+                v-for="index in matrixSize" 
+                :key="'y-' + index" 
+                v-model.number="yVector[index - 1]"
+                type="number" 
+                step="any"
+                class="form-control mb-2" 
+                :placeholder="'y' + index"
+              />
             </div>
           </div>
         </div>
-        
-        <div v-if="errorMessage" class="alert alert-danger mt-3">
+
+        <!-- Error Message -->
+        <div v-if="errorMessage" class="alert alert-danger mb-4">
+          <i class="fas fa-exclamation-circle me-2"></i>
           {{ errorMessage }}
         </div>
-        <button type="submit" class="btn btn-primary mt-3">Submit</button>
+
+        <!-- Submit Button -->
+        <div class="text-end">
+          <button type="submit" class="btn btn-primary">
+            Calculate Interpolation
+          </button>
+        </div>
       </form>
     </div>
+  </div>
 
-    <InterpolationGraph 
-      v-if="response" 
-      :polynom="response.polynom" 
-      :method="selectedMethod"
-      :xPoints="xVector"
-      :yPoints="yVector"
-    />
+  <!-- Result Graph -->
+  <div v-if="response" class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h5 class="m-0 font-weight-bold text-primary">Interpolation Result</h5>
+    </div>
+    <div class="card-body">
+      <InterpolationGraph 
+        :polynom="response.polynom" 
+        :method="selectedMethod"
+        :xPoints="xVector"
+        :yPoints="yVector"
+      />
+    </div>
+  </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.card-text {
+  margin-bottom: 1rem;
+}
+
+.methods-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  padding: 0.75rem;
+}
+
+.method-card {
+  width: 100%;
+}
+
+.form-control {
+  margin-bottom: 1rem;
+}
+
+code {
+  background-color: #f8f9fa;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.2rem;
+}
+
+@media (max-width: 768px) {
+  .methods-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.vector-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+</style>

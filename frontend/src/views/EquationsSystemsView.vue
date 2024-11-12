@@ -66,156 +66,213 @@ const handleSubmit = async (event : Event) => {
     console.log('Error posting form data:', error);
   }
 };
+
+const methods = [
+  {
+    name: 'Jacobi',
+    description: 'An iterative method that solves a system of linear equations by approximating each diagonal element independently.'
+  },
+  {
+    name: 'Gauss-Seidel',
+    description: 'An improvement over the Jacobi method that uses updated values as soon as they are available in each iteration.'
+  },
+  {
+    name: 'SOR (Successive Over-Relaxation)',
+    description: 'An accelerated version of the Gauss-Seidel method that uses a relaxation factor to improve convergence.'
+  }
+];
 </script>
 
 <template>
   <BreadCrumb :breadCrumbList="breadCrumbList" />
 
+  <!-- Introduction Card -->
   <div class="card shadow mb-4">
     <div class="card-header py-3">
-      <h6 class="m-0 font-weight-bold text-primary">Equations System Form Input</h6>
+      <h4 class="m-0 font-weight-bold text-primary">Systems of Linear Equations</h4>
     </div>
     <div class="card-body">
-      <ul>
+      <p class="lead mb-4">
+        This section provides iterative methods for solving systems of linear equations.
+        Each method has its own characteristics and convergence properties.
+      </p>
 
-        <li class="mt-3"><b>Tolerance: </b>Acceptable error margin for the root approximation.</li>
-        <li class="mt-3"><b>Error Type: </b>Defines the error calculation method (e.g., absolute or relative).</li>
-        <li class="mt-3"><b>Max Iterations: </b>Maximum number of iterations allowed to find the root.</li>
-        <li class="mt-3"><b>Matrix Size: </b>The number of equations and unknowns in the system.</li>
-        <li class="mt-3"><b>Matrix (nxn): </b>The 𝑛×𝑛 matrix is a square matrix with 𝑛 rows and 𝑛 columns, intended to store specific values related to the problem</li>
-        <li class="mt-3"><b>Solution Vector: </b>Is an 𝑛-dimensional vector that holds the solution values associated with each row or column in the 𝑛×𝑛 matrix, representing outcomes from calculations or optimizations based on the matrix data.</li>
-      </ul>
+      <!-- Methods Cards -->
+      <div class="methods-grid">
+        <div v-for="method in methods" :key="method.name" class="method-card">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">{{ method.name }}</h5>
+              <p class="card-text">{{ method.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-    <div class="card shadow mb-4">
-      <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Equations Systems</h6>
+  <!-- Input Guide Card -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h5 class="m-0 font-weight-bold text-primary">Input Format Guide</h5>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th width="20%">Input Field</th>
+              <th width="80%">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Tolerance</b></td>
+              <td>Acceptable error margin for the root approximation.</td>
+            </tr>
+            <tr>
+              <td><b>Error Type</b></td>
+              <td>Defines the error calculation method (absolute or relative).</td>
+            </tr>
+            <tr>
+              <td><b>Max Iterations</b></td>
+              <td>Maximum number of iterations allowed to find the solution.</td>
+            </tr>
+            <tr>
+              <td><b>Matrix Size</b></td>
+              <td>The number of equations and unknowns in the system (n×n).</td>
+            </tr>
+            <tr>
+              <td><b>Matrix</b></td>
+              <td>The n×n coefficient matrix with n rows and n columns.</td>
+            </tr>
+            <tr>
+              <td><b>Solution Vector</b></td>
+              <td>An n-dimensional vector holding the constant terms of the equations.</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <form  @submit="handleSubmit" class="p-4">
-        <div class="form-group">
-          <label for="methodSelect">Choose a method:</label>
-          <select id="methodSelect" v-model="selectedMethod" class="form-control">
-            <option value="jacobi">Jacobi</option>
-            <option value="gauss-seidel">Gauss-Seidel</option>
-            <option value="sor">SOR</option>
-          </select>
-        </div>
-        <div class="row mt-3">
-            <div class="col" v-if="selectedMethod === 'sor'">
-              <label for="omega">Omega</label>
-              <input type="text" class="form-control" id="omega" name="omega" placeholder="Enter omega value">
-            </div>
-            <div class="col">
-              <label for="maxIterations">Max Iterations</label>
-              <input type="number" class="form-control" id="maxIterations" name="maxIterations" placeholder="Enter max iterations" step="1" min="1" required oninvalid="this.setCustomValidity('Max Iterations must be a positive integer greater than zero.')" oninput="this.setCustomValidity('')">
-            </div>
-          </div>
-          <div class="row mt-3">
-            <div class="col">
-              <label for="tolerance">Tolerance</label>
-              <input 
-                type="number" 
-                class="form-control" 
-                id="tolerance" 
-                name="tolerance" 
-                placeholder="Enter tolerance" 
-                step="any" 
-                min="0.0000001" 
-                required
-                oninvalid="this.setCustomValidity('Tolerance must be a positive number.')"
-                oninput="this.setCustomValidity('')"
-              >
-            </div>
-            <div class="col">
-              <label for="errorType">Error Type</label>
-              <select class="form-control" id="errorType" name="errorType">
-                <option value="absolute">Absolute Error</option>
-                <option value="relative">Relative Error</option>
-              </select>
-            </div>
-          </div>
-        <div v-if="selectedMethod" class="form-group mt-3">
-          <label for="matrixSize">Matrix size:</label>
-          <input 
-            type="number" 
-            id="matrixSize" 
-            v-model="matrixSize" 
-            class="form-control" 
-            :min="2" 
-            :max="6" 
-            placeholder="Enter matrix size" 
-            required
-            oninvalid="this.setCustomValidity('Matrix size must be between 2 and 6.')"
-            oninput="this.setCustomValidity('')"
-          />
-        </div>
-        
-
-        <div class="row mt-3">
-          <div class="col">
-            <div v-if="matrixSize" class="mt-3">
-              <label>Enter the matrix :  {{ matrixSize }}x{{ matrixSize }}</label>
-              <div class="d-flex flex-column mb-2">
-                <div v-for="(row, rowIndex) in matrixValues" :key="'row-' + rowIndex" class="d-flex mb-2">
-                  <input 
-                    v-for="(value, colIndex) in row" 
-                    :key="'col-' + colIndex" 
-                    v-model.number="matrixValues[rowIndex][colIndex]" 
-                    type="number"
-                    step="any"
-                    class="form-control mx-1" 
-                    style="width: 70px;"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col">
-            <div v-if="matrixSize" class="mt-3">
-              <label>Enter the solution vector :</label>
-              <div class="d-flex flex-column mb-2">
-                <input 
-                  v-for="index in matrixSize" 
-                  :key="'sol-' + index" 
-                  v-model.number="solutionVector[index - 1]" 
-                  type="number" 
-                  step="any"
-                  class="form-control mx-1 mb-2" 
-                  style="width: 70px;"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div class="col" v-if="selectedMethod === 'sor'">
-            <div v-if="matrixSize" class="mt-3">
-              <label>Enter the initial guess vector :</label>
-              <div class="d-flex flex-column mb-2">
-                <input 
-                  v-for="index in matrixSize" 
-                  :key="'sol-' + index" 
-                  v-model.number="initialGuess[index - 1]" 
-                  type="number" 
-                  class="form-control mx-1 mb-2" 
-                  style="width: 70px;"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <button type="submit" class="btn btn-primary mt-3">Submit</button>
-      </form>
+    </div>
   </div>
-  <Table :tableData="tableData" />
-  <LineGraph 
-    v-if="matrixSize === 2" 
-    :matrixValues="matrixValues" 
-    :solutionVector="solutionVector" 
-    :matrixSize="matrixSize" 
-  />
+
+  <!-- Calculator Form Card -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h5 class="m-0 font-weight-bold text-primary">System Solver Calculator</h5>
+    </div>
+    <div class="card-body">
+      <form @submit="handleSubmit">
+        <!-- Method Selection -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <label class="form-label font-weight-bold" for="methodSelect">Method:</label>
+            <select id="methodSelect" v-model="selectedMethod" class="form-control form-select">
+              <option value="jacobi">Jacobi</option>
+              <option value="gauss-seidel">Gauss-Seidel</option>
+              <option value="sor">SOR</option>
+            </select>
+          </div>
+
+          <div class="col-md-6" v-if="selectedMethod === 'sor'">
+            <label class="form-label font-weight-bold" for="omega">Omega:</label>
+            <input type="number" class="form-control" id="omega" name="omega" 
+                   placeholder="Enter omega value" step="any">
+          </div>
+        </div>
+
+        <!-- Parameters -->
+        <div class="row mb-4">
+          <div class="col-md-4">
+            <label class="form-label font-weight-bold" for="maxIterations">Max Iterations:</label>
+            <input type="number" class="form-control" id="maxIterations" name="maxIterations" 
+                   placeholder="Enter max iterations" step="1" min="1" required>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label font-weight-bold" for="tolerance">Tolerance:</label>
+            <input type="number" class="form-control" id="tolerance" name="tolerance" 
+                   placeholder="Enter tolerance" step="any" min="0.0000001" required>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label font-weight-bold" for="errorType">Error Type:</label>
+            <select class="form-control form-select" id="errorType" name="errorType">
+              <option value="absolute">Absolute Error</option>
+              <option value="relative">Relative Error</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Matrix Size -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <label class="form-label font-weight-bold" for="matrixSize">Matrix Size:</label>
+            <input type="number" id="matrixSize" v-model="matrixSize" 
+                   class="form-control" :min="2" :max="6" required>
+          </div>
+        </div>
+
+        <!-- Matrix and Vectors -->
+        <div class="row mb-4">
+          <div class="col-md-4">
+            <label class="form-label font-weight-bold">Matrix ({{ matrixSize }}×{{ matrixSize }}):</label>
+            <div class="matrix-inputs">
+              <div v-for="(row, rowIndex) in matrixValues" :key="'row-' + rowIndex" 
+                   class="d-flex gap-2 mb-2">
+                <input v-for="(value, colIndex) in row" 
+                       :key="'col-' + colIndex"
+                       v-model.number="matrixValues[rowIndex][colIndex]"
+                       type="number" step="any" class="form-control"
+                       :placeholder="`a${rowIndex+1}${colIndex+1}`">
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label font-weight-bold">Solution Vector:</label>
+            <div class="vector-inputs">
+              <input v-for="index in matrixSize" 
+                     :key="'sol-' + index"
+                     v-model.number="solutionVector[index - 1]"
+                     type="number" step="any" class="form-control mb-2"
+                     :placeholder="`b${index}`">
+            </div>
+          </div>
+
+          <div class="col-md-4" v-if="selectedMethod === 'sor'">
+            <label class="form-label font-weight-bold">Initial Guess Vector:</label>
+            <div class="vector-inputs">
+              <input v-for="index in matrixSize"
+                     :key="'guess-' + index"
+                     v-model.number="initialGuess[index - 1]"
+                     type="number" step="any" class="form-control mb-2"
+                     :placeholder="`x${index}`">
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="text-end">
+          <button type="submit" class="btn btn-primary">
+            Solve System
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div v-if="tableData.length > 0" class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h5 class="m-0 font-weight-bold text-primary">Solution Results</h5>
+    </div>
+    <div class="card-body">
+      <Table :tableData="tableData" />
+      <LineGraph v-if="matrixSize === 2"
+                :matrixValues="matrixValues"
+                :solutionVector="solutionVector"
+                :matrixSize="matrixSize" />
+    </div>
+  </div>
 </template>
 
 <style scoped></style>
