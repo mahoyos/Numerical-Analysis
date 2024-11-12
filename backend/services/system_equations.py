@@ -30,7 +30,7 @@ class SystemEquationsService:
                 error = ErrorType.relative_error_system_equations(x_new, x)
             else:
                 error = ErrorType.absolute_error_system_equations(x_new, x)
-                
+
             x = x_new
             iteration_counter += 1
             iteration_data.append([iteration_counter, x_new.tolist(), error])
