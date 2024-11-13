@@ -1,10 +1,17 @@
+from utils.error_type import ErrorType
+from utils.handlers.system_equations_handler import SystemEquationsHandler
+from utils.errors.common_errors import (
+    MaxIterationsReachedError,
+    ToleranceNotMetError,
+    BaseError
+)
 from typing import Dict, Any, List
 import numpy as np
-from utils.error_type import ErrorType
 
 
 class SystemEquationsService:
     @staticmethod
+    @SystemEquationsHandler.handle_response
     def sor_service(
         matrix_A: List[List[float]],
         solution_vector: List[float],
@@ -35,6 +42,11 @@ class SystemEquationsService:
             iteration_counter += 1
             iteration_data.append([iteration_counter, x_new.tolist(), error])
 
+        if iteration_counter >= max_iterations:
+            raise MaxIterationsReachedError()
+        if error > tolerance:
+            raise ToleranceNotMetError()
+
         result = {
             "root": x.tolist(),
             "iteration_data": iteration_data
@@ -43,6 +55,7 @@ class SystemEquationsService:
         return result
 
     @staticmethod
+    @SystemEquationsHandler.handle_response
     def gauss_seidel_service(
         matrix_A: List[List[float]],
         solution_vector: List[float],
@@ -72,6 +85,11 @@ class SystemEquationsService:
             if error < tolerance:
                 break
 
+        if iteration_counter >= max_iterations - 1:
+            raise MaxIterationsReachedError()
+        if error > tolerance:
+            raise ToleranceNotMetError()
+
         result = {
             "root": x.tolist(),
             "iteration_data": iteration_data,
@@ -80,6 +98,7 @@ class SystemEquationsService:
         return result
 
     @staticmethod
+    @SystemEquationsHandler.handle_response
     def jacobi_service(
         matrix_A: List[List[float]],
         solution_vector: List[float],
@@ -88,27 +107,35 @@ class SystemEquationsService:
         max_iterations: int,
         error_type: str
     ) -> Dict[str, Any]:
-        x = np.array(initial_guess)
-        iteration_data = []
+        try:
+            x = np.array(initial_guess)
+            iteration_data = []
 
-        matrix_D = np.diag(np.diag(matrix_A))
-        matrix_LU = matrix_A - matrix_D
-        iteration_counter = 0
-        error = tolerance + 1
-        while error > tolerance and iteration_counter < max_iterations:
-            x_new = np.linalg.inv(matrix_D) @ (np.array(solution_vector) - matrix_LU @ x)
-            if error_type == "relative":
-                error = ErrorType.relative_error_system_equations(x_new, x)
-            else:
-                error = ErrorType.absolute_error_system_equations(x_new, x)
+            matrix_D = np.diag(np.diag(matrix_A))
+            matrix_LU = matrix_A - matrix_D
+            iteration_counter = 0
+            error = tolerance + 1
 
-            x = x_new
-            iteration_counter += 1
-            iteration_data.append([iteration_counter, x.tolist(), error])
+            while error > tolerance and iteration_counter < max_iterations:
+                x_new = np.linalg.inv(matrix_D) @ (np.array(solution_vector) - matrix_LU @ x)
+                if error_type == "relative":
+                    error = ErrorType.relative_error_system_equations(x_new, x)
+                else:
+                    error = ErrorType.absolute_error_system_equations(x_new, x)
 
-        result = {
-            "root": x.tolist(),
-            "iteration_data": iteration_data,
-        }
+                x = x_new
+                iteration_counter += 1
+                iteration_data.append([iteration_counter, x.tolist(), error])
 
-        return result
+            if iteration_counter >= max_iterations:
+                raise MaxIterationsReachedError()
+            if error > tolerance:
+                raise ToleranceNotMetError()
+
+            return {
+                "root": x.tolist(),
+                "iteration_data": iteration_data
+            }
+
+        except Exception as e:
+            raise BaseError(str(e), "CALCULATION_ERROR")

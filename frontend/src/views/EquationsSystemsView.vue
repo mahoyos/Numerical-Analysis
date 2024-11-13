@@ -21,6 +21,9 @@ const solutionVector = ref<number[]>([]);
 const initialGuess = ref<number[]>([]);
 
 const messageType = ref<string | null>(null);
+const messageText = ref<string>('');
+const success = ref<boolean>(false);
+const finalSolution = ref<number[]>([]);
 
 let tableData = ref([]);
 
@@ -40,6 +43,13 @@ initializeMatrixAndVector(matrixSize.value);
 
 const handleSubmit = async (event : Event) => {
   event.preventDefault();
+  
+  // Reset states
+  messageType.value = null;
+  messageText.value = '';
+  success.value = false;
+  tableData.value = [];
+  finalSolution.value = [];
 
   let formData = new FormData(event.target as HTMLFormElement);
   const data = {
@@ -56,14 +66,26 @@ const handleSubmit = async (event : Event) => {
   try {
     const response = await SystemsEquationsService.postSystemsEquationsData(data);
     
+    if (response.status === 'error') {
+      messageType.value = 'error';
+      messageText.value = `Error Code: ${response.error.code}\n${response.error.message}`;
+      return;
+    }
+
+    success.value = true;
     tableData.value = response.iteration_data.map((iteration: any) => ({
       iteration: iteration[0],
       values: iteration[1],
       error: iteration[2],
     }));
+    
+    // Get the last iteration's values as the final solution
+    finalSolution.value = tableData.value[tableData.value.length - 1].values;
 
-  } catch (error) {
-    console.log('Error posting form data:', error);
+  } catch (error: any) {
+    messageType.value = 'error';
+    messageText.value = 'Error Code: UNKNOWN_ERROR\nAn unexpected error occurred while processing your request';
+    console.error('Error posting form data:', error);
   }
 };
 
@@ -260,13 +282,32 @@ const methods = [
     </div>
   </div>
 
+  <!-- Error Message -->
+  <div v-if="messageType === 'error'" class="alert alert-danger mb-4" role="alert">
+    <i class="fas fa-exclamation-circle me-2"></i>
+    <div style="white-space: pre-line">{{ messageText }}</div>
+  </div>
+
   <!-- Results -->
-  <div v-if="tableData.length > 0" class="card shadow mb-4">
+  <div v-if="success && tableData.length > 0" class="card shadow mb-4">
     <div class="card-header py-3">
       <h5 class="m-0 font-weight-bold text-primary">Solution Results</h5>
     </div>
     <div class="card-body">
+      <!-- Final Solution -->
+      <div class="mb-4">
+        <h6 class="font-weight-bold">Final Solution:</h6>
+        <div class="d-flex gap-3">
+          <div v-for="(value, index) in finalSolution" :key="index" class="text-primary">
+            x{{ index + 1 }} = {{ value.toFixed(6) }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Iteration Table -->
       <Table :tableData="tableData" />
+      
+      <!-- Line Graph (only for 2x2 systems) -->
       <LineGraph v-if="matrixSize === 2"
                 :matrixValues="matrixValues"
                 :solutionVector="solutionVector"
