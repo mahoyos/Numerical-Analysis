@@ -26,6 +26,7 @@ async def systems_equations_route(input_data: SystemsEquationsInput) -> Dict[str
             input_data.matrix_A,
             input_data.solution_vector,
             input_data.tolerance,
+            input_data.initial_guess,
             input_data.max_iterations,
             input_data.error_type,
         )

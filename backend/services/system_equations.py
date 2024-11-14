@@ -5,6 +5,7 @@ from utils.errors.common_errors import (
     ToleranceNotMetError,
     BaseError
 )
+from utils.system_equations import SystemEquationsUtils
 from typing import Dict, Any, List
 import numpy as np
 
@@ -22,6 +23,7 @@ class SystemEquationsService:
         error_type: str
     ) -> Dict[str, Any]:
         iteration_data = []
+        spectral_radius_value = SystemEquationsUtils.spectral_radius(matrix_A)
         matrix_D = np.diag(np.diag(matrix_A))
         matrix_L = -1 * np.tril(matrix_A, -1)
         matrix_U = -1 * np.triu(matrix_A, 1)
@@ -49,7 +51,8 @@ class SystemEquationsService:
 
         result = {
             "root": x.tolist(),
-            "iteration_data": iteration_data
+            "iteration_data": iteration_data,
+            "spectral_radius": spectral_radius_value
         }
 
         return result
@@ -60,32 +63,33 @@ class SystemEquationsService:
         matrix_A: List[List[float]],
         solution_vector: List[float],
         tolerance: float,
+        initial_guess: List[float],
         max_iterations: int,
         error_type: str
     ) -> Dict[str, Any]:
-        n = len(matrix_A)
-        x = np.zeros(len(matrix_A))
+        x = np.array(initial_guess, dtype=float)
         iteration_data = []
+        spectral_radius_value = SystemEquationsUtils.spectral_radius(matrix_A)
+        n = len(matrix_A)
+        error = tolerance + 1
+        iteration_counter = 0
 
-        for iteration_counter in range(max_iterations):
-            x_old = x.copy()
-
+        while error > tolerance and iteration_counter < max_iterations:
+            x_new = np.copy(x)
             for i in range(n):
-                sum1 = sum(matrix_A[i][j] * x[j] for j in range(i))
-                sum2 = sum(matrix_A[i][j] * x_old[j] for j in range(i + 1, n))
-                x[i] = (solution_vector[i] - sum1 - sum2) / matrix_A[i][i]
+                sum_val = sum(matrix_A[i][j] * x_new[j] for j in range(n) if j != i)
+                x_new[i] = (solution_vector[i] - sum_val) / matrix_A[i][i]
 
             if error_type == "relative":
-                error = ErrorType.relative_error_system_equations(x, x_old)
+                error = ErrorType.relative_error_system_equations(x_new, x)
             else:
-                error = ErrorType.absolute_error_system_equations(x, x_old)
+                error = ErrorType.absolute_error_system_equations(x_new, x)
 
-            iteration_data.append([iteration_counter, x.copy().tolist(), error])
+            x = x_new
+            iteration_counter += 1
+            iteration_data.append([iteration_counter, x.tolist(), error])
 
-            if error < tolerance:
-                break
-
-        if iteration_counter >= max_iterations - 1:
+        if iteration_counter >= max_iterations:
             raise MaxIterationsReachedError()
         if error > tolerance:
             raise ToleranceNotMetError()
@@ -93,8 +97,8 @@ class SystemEquationsService:
         result = {
             "root": x.tolist(),
             "iteration_data": iteration_data,
+            "spectral_radius": spectral_radius_value
         }
-
         return result
 
     @staticmethod
@@ -110,7 +114,7 @@ class SystemEquationsService:
         try:
             x = np.array(initial_guess)
             iteration_data = []
-
+            spectral_radius_value = SystemEquationsUtils.spectral_radius(matrix_A)
             matrix_D = np.diag(np.diag(matrix_A))
             matrix_LU = matrix_A - matrix_D
             iteration_counter = 0
@@ -134,7 +138,8 @@ class SystemEquationsService:
 
             return {
                 "root": x.tolist(),
-                "iteration_data": iteration_data
+                "iterations": iteration_data,
+                "spectral_radius": spectral_radius_value
             }
 
         except Exception as e:
