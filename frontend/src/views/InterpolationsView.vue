@@ -63,7 +63,6 @@ const handleSubmit = async (event: Event) => {
 
   try {
     response.value = await InterpolationsService.postInterpolationsData(data);
-    //initializeMatrixAndVector(matrixSize.value);
   } catch (error) {
     console.log('Error posting form data:', error);
   }
@@ -200,8 +199,7 @@ const methods = [
           </div>
         </div>
 
-        <!-- Size and Error Type -->
-        <div class="row mb-4">
+        
           <div class="col-md-6">
             <label class="form-label font-weight-bold" for="matrixSize">Number of points (n):</label>
             <input 
@@ -214,15 +212,7 @@ const methods = [
               placeholder="Enter number of points" 
             />
           </div>
-
-          <div class="col-md-6">
-            <label class="form-label font-weight-bold" for="errorType">Error Type:</label>
-            <select class="form-control form-select" id="errorType" name="errorType">
-              <option value="absolute">Absolute Error</option>
-              <option value="relative">Relative Error</option>
-            </select>
-          </div>
-        </div>
+        
 
         <!-- Vectors Input -->
         <div class="row mb-4">
