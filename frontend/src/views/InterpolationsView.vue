@@ -40,6 +40,7 @@ const hasRepeatedXValues = (xValues: number[]): boolean => {
 const handleSubmit = async (event: Event) => {
   event.preventDefault();
   errorMessage.value = '';
+  response.value = null;
 
   if (hasRepeatedXValues(xVector.value)) {
     errorMessage.value = 'X values must be unique. Please check for repeated values.';
