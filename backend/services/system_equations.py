@@ -4,7 +4,7 @@ from utils.errors.common_errors import (
     MaxIterationsReachedError,
     ToleranceNotMetError,
     BaseError,
-    ConvergenceError
+    ConvergenceError,
 )
 from utils.system_equations import SystemEquationsUtils
 from typing import Dict, Any, List
@@ -53,58 +53,74 @@ class SystemEquationsService:
         if convergence_status == "not_converged":
             raise ConvergenceError()
 
+        omega_value = omega
+
+        spectral_radius = SystemEquationsUtils.spectral_radius(matrix_A, "sor", omega=omega_value)
+
         result = {
             "root": x.tolist(),
-            "iterations": iteration_data
+            "iterations": iteration_data,
         }
-        return result
+        return result, {"spectral_radius": spectral_radius}
 
     @staticmethod
     @SystemEquationsHandler.handle_response
     def gauss_seidel_service(
         matrix_A: List[List[float]],
         solution_vector: List[float],
+        initial_guess: List[float],
         tolerance: float,
         max_iterations: int,
         error_type: str
     ) -> Dict[str, Any]:
-        n = len(matrix_A)
-        x = np.zeros(len(matrix_A))
-        iteration_data = []
+        print("Initial guess: ", initial_guess)
+        try:
+            # Convertir las entradas a arrays de numpy
+            matrix_A = np.array(matrix_A, dtype=float)
+            solution_vector = np.array(solution_vector, dtype=float)
+            x = np.array(initial_guess, dtype=float)
 
-        for iteration_counter in range(max_iterations):
-            x_old = x.copy()
+            n = len(matrix_A)
+            iteration_data = []
 
-            for i in range(n):
-                sum1 = sum(matrix_A[i][j] * x[j] for j in range(i))
-                sum2 = sum(matrix_A[i][j] * x_old[j] for j in range(i + 1, n))
-                x[i] = (solution_vector[i] - sum1 - sum2) / matrix_A[i][i]
+            for iteration_counter in range(max_iterations):
+                x_old = x.copy()
 
-            if error_type == "relative":
-                error = ErrorType.relative_error_system_equations(x, x_old)
-            else:
-                error = ErrorType.absolute_error_system_equations(x, x_old)
+                for i in range(n):
+                    sum1 = sum(matrix_A[i][j] * x[j] for j in range(i))
+                    sum2 = sum(matrix_A[i][j] * x_old[j] for j in range(i + 1, n))
+                    x[i] = (solution_vector[i] - sum1 - sum2) / matrix_A[i][i]
 
-            iteration_data.append([iteration_counter, x.copy().tolist(), error])
+                if error_type == "relative":
+                    error = ErrorType.relative_error_system_equations(x, x_old)
+                else:
+                    error = ErrorType.absolute_error_system_equations(x, x_old)
 
-            if error < tolerance:
-                break
+                iteration_data.append([iteration_counter, x.copy().tolist(), error])
 
-        if iteration_counter >= max_iterations - 1:
-            raise MaxIterationsReachedError()
-        if error > tolerance:
-            raise ToleranceNotMetError()
-        
-        convergence_status = SystemEquationsUtils.verify_solution(matrix_A, x, solution_vector, tolerance)["status"]
-        if convergence_status == "not_converged":
-            raise ConvergenceError()
+                if error < tolerance:
+                    break
 
-        result = {
-            "root": x.tolist(),
-            "iterations": iteration_data,
-        }
+            if iteration_counter >= max_iterations - 1:
+                raise MaxIterationsReachedError()
+            if error > tolerance:
+                raise ToleranceNotMetError()
 
-        return result
+            convergence_status = SystemEquationsUtils.verify_solution(matrix_A, x, solution_vector, tolerance)["status"]
+            if convergence_status == "not_converged":
+                raise ConvergenceError()
+
+            spectral_radius = SystemEquationsUtils.spectral_radius(matrix_A, "gauss_seidel")
+
+            result = {
+                "root": x.tolist(),
+                "iterations": iteration_data,
+            }
+
+            return result, {"spectral_radius": spectral_radius}
+
+        except Exception as e:
+            raise BaseError(str(e), "CALCULATION_ERROR")
 
     @staticmethod
     @SystemEquationsHandler.handle_response
@@ -140,15 +156,19 @@ class SystemEquationsService:
                 raise MaxIterationsReachedError()
             if error > tolerance:
                 raise ToleranceNotMetError()
-            
+
             convergence_status = SystemEquationsUtils.verify_solution(matrix_A, x, solution_vector, tolerance)["status"]
             if convergence_status == "not_converged":
                 raise ConvergenceError()
 
-            return {
+            spectral_radius = SystemEquationsUtils.spectral_radius(matrix_A, "jacobi")
+
+            result = {
                 "root": x.tolist(),
-                "iterations": iteration_data
+                "iterations": iteration_data,
             }
+
+            return result, {"spectral_radius": spectral_radius}
 
         except Exception as e:
             raise BaseError(str(e), "CALCULATION_ERROR")

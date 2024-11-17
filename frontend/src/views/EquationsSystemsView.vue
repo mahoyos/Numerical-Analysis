@@ -24,6 +24,7 @@ const messageType = ref<string | null>(null);
 const messageText = ref<string>('');
 const success = ref<boolean>(false);
 const finalSolution = ref<number[]>([]);
+const spectralRadius = ref<number | null>(null);
 
 let tableData = ref([]);
 
@@ -50,6 +51,7 @@ const handleSubmit = async (event : Event) => {
   success.value = false;
   tableData.value = [];
   finalSolution.value = [];
+  spectralRadius.value = null;
 
   let formData = new FormData(event.target as HTMLFormElement);
   const data = {
@@ -105,6 +107,7 @@ const handleSubmit = async (event : Event) => {
     }));
     
     finalSolution.value = response.root;
+    spectralRadius.value = response.spectral_radius;
 
   } catch (error: any) {
     messageType.value = 'error';
@@ -361,7 +364,7 @@ const methods = [
             </div>
           </div>
 
-          <div class="col-md-4" v-if="selectedMethod === 'sor'">
+          <div class="col-md-4">
             <label class="form-label font-weight-bold">Initial Guess Vector:</label>
             <div class="vector-inputs">
               <input v-for="index in matrixSize"
@@ -402,6 +405,17 @@ const methods = [
           <div v-for="(value, index) in finalSolution" :key="index" class="text-primary">
             x{{ index + 1 }} = {{ value.toFixed(6) }}
           </div>
+        </div>
+      </div>
+
+      <!-- Spectral Radius -->
+      <div v-if="spectralRadius !== null" class="mb-4">
+        <h6 class="font-weight-bold">Spectral Radius:</h6>
+        <div class="text-primary">
+          ρ = {{ spectralRadius.toFixed(6) }}
+          <span class="ms-2 text-muted">
+            ({{ spectralRadius < 1 ? 'Method converges' : 'Method could not converge' }})
+          </span>
         </div>
       </div>
 

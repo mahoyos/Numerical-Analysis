@@ -35,6 +35,16 @@ class DerivativeZeroValueError(BaseError):
     def __init__(self, message: str = "The derivative of F takes a zero value."):
         super().__init__(message, "DERIVATIVE_ZERO_VALUE")
 
+
 class ConvergenceError(BaseError):
     def __init__(self, message: str = "The system does not converge."):
         super().__init__(message, "CONVERGENCE_ERROR")
+
+
+class SpectralRadiusError(BaseError):
+    def __init__(self, spectral_radius: float):
+        message = f"The spectral radius ({spectral_radius}) is greater than 1."
+        super().__init__(
+            message=message,
+            error_code="SPECTRAL_RADIUS_ERROR",
+        )
