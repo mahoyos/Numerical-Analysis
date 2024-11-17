@@ -133,6 +133,9 @@ const handleSubmit = async (event: any) => {
   <div v-if="message" class="alert" :class="{'alert-success': messageType === 'success', 'alert-danger': messageType === 'error'}">
     {{ message }}
   </div>
+  <div v-if="solutionPoint !== null" class="alert alert-info">
+    <strong>Root found:</strong> {{ solutionPoint }}
+  </div>
   <Table v-if="messageType === 'success'" :tableData="tableData" />
   <Chart v-if="solutionPoint !== null" :functionExpression="chartData.function_expression" :solution="chartData.solution" />
 </template>
