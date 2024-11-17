@@ -68,7 +68,32 @@ const handleSubmit = async (event : Event) => {
     
     if (response.status === 'error') {
       messageType.value = 'error';
-      messageText.value = `Error Code: ${response.error.code}\n${response.error.message}`;
+      
+      // Customize message based on error code
+      if (response.error.code === 'CONVERGENCE_ERROR') {
+        let methodRequirements = '';
+        switch (selectedMethod.value) {
+          case 'jacobi':
+            methodRequirements = 'The Jacobi method requires the matrix to be strictly diagonally dominant to guarantee convergence.';
+            break;
+          case 'gauss-seidel':
+            methodRequirements = 'The Gauss-Seidel method requires the matrix to be either strictly diagonally dominant or symmetric positive definite.';
+            break;
+          case 'sor':
+            methodRequirements = 'The SOR method requires an appropriate choice of ω parameter and the matrix to be symmetric positive definite.';
+            break;
+        }
+        
+        messageText.value = `Error: The method failed to converge to a valid solution.\n\n` +
+                          `${methodRequirements}\n\n` +
+                          `Suggestions:\n` +
+                          `• Verify that your matrix meets the method's requirements\n` +
+                          `• Try increasing the maximum number of iterations\n` +
+                          `• Consider using a less strict tolerance value\n` +
+                          `• Try a different method`;
+      } else {
+        messageText.value = `Error Code: ${response.error.code}\n${response.error.message}`;
+      }
       return;
     }
 
@@ -91,15 +116,15 @@ const handleSubmit = async (event : Event) => {
 const methods = [
   {
     name: 'Jacobi',
-    description: 'An iterative method that solves a system of linear equations by approximating each diagonal element independently.'
+    description: 'An iterative method that solves a system of linear equations by computing each variable using previous iteration values. All variables are updated simultaneously after each iteration.'
   },
   {
     name: 'Gauss-Seidel',
-    description: 'An improvement over the Jacobi method that uses updated values as soon as they are available in each iteration.'
+    description: 'An iterative method that improves upon Jacobi by using the most recently calculated values within the same iteration, typically resulting in faster convergence.'
   },
   {
     name: 'SOR (Successive Over-Relaxation)',
-    description: 'An accelerated version of the Gauss-Seidel method that uses a relaxation factor to improve convergence.'
+    description: 'An accelerated version of Gauss-Seidel that introduces a relaxation factor (ω) to speed up convergence. When 0 < ω < 1 it becomes under-relaxation, and when 1 < ω < 2 it becomes over-relaxation.'
   }
 ];
 </script>
@@ -128,6 +153,83 @@ const methods = [
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Methods Comparison Card -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h5 class="m-0 font-weight-bold text-primary">Methods Comparison</h5>
+    </div>
+    <div class="card-body">
+      <p class="mb-4">
+        Each iterative method has its own convergence properties and requirements. Understanding these is crucial for solving systems of linear equations effectively.
+      </p>
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Diagonally Dominant Required</th>
+              <th>Positive Definite Required</th>
+              <th>Key Characteristics</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Jacobi</td>
+              <td>Yes</td>
+              <td>Not necessarily</td>
+              <td>
+                <ul class="mb-0">
+                  <li>Simple implementation and concept</li>
+                  <li>Parallel-friendly as all updates are independent</li>
+                  <li>Generally slower convergence rate</li>
+                  <li>Requires storage of previous iteration values</li>
+                  <li>Guaranteed to converge for strictly diagonally dominant matrices</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td>Gauss-Seidel</td>
+              <td>Yes</td>
+              <td>Not necessarily</td>
+              <td>
+                <ul class="mb-0">
+                  <li>Usually converges in fewer iterations than Jacobi</li>
+                  <li>Uses less memory as it updates values in place</li>
+                  <li>Sequential nature makes parallelization difficult</li>
+                  <li>Guaranteed to converge for strictly diagonally dominant or symmetric positive definite matrices</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td>SOR</td>
+              <td>Not necessarily</td>
+              <td>Yes</td>
+              <td>
+                <ul class="mb-0">
+                  <li>Can achieve fastest convergence of all three methods</li>
+                  <li>Optimal ω depends on matrix properties</li>
+                  <li>For ω = 1, reduces to Gauss-Seidel</li>
+                  <li>Typically 1 < ω < 2 for over-relaxation</li>
+                  <li>Convergence highly dependent on choice of ω</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-4">
+        <h6 class="font-weight-bold">Important Notes:</h6>
+        <ul>
+          <li><strong>Diagonally Dominant:</strong> A matrix is strictly diagonally dominant if |aii| > Σ|aij| (i≠j) for each row i, where aii is the diagonal element.</li>
+          <li><strong>Positive Definite:</strong> A symmetric matrix A is positive definite if xᵀAx > 0 for all non-zero vectors x. This property ensures unique solutions and convergence.</li>
+          <li><strong>Convergence Speed:</strong> Generally, with optimal parameters: SOR > Gauss-Seidel > Jacobi.</li>
+          <li><strong>Method Selection:</strong> Consider matrix properties, system size, and computational resources when choosing a method.</li>
+          <li><strong>Iteration Cost:</strong> Each method has different per-iteration computational costs, which should be considered alongside convergence rate.</li>
+        </ul>
       </div>
     </div>
   </div>

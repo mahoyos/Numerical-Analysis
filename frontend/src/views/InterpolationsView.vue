@@ -51,10 +51,17 @@ const handleSubmit = async (event: Event) => {
     return;
   }
 
+  // Create pairs of x,y points and sort them by x values
+  const points = xVector.value.map((x, index) => ({
+    x: x,
+    y: yVector.value[index]
+  }));
+  points.sort((a, b) => a.x - b.x);
+
   const data: any = {
     method: selectedMethod.value,
-    x_points: xVector.value,
-    y_points: yVector.value,
+    x_points: points.map(p => p.x),
+    y_points: points.map(p => p.y),
   };
 
   if (selectedMethod.value === 'spline' && degree.value !== null) {
@@ -63,6 +70,9 @@ const handleSubmit = async (event: Event) => {
 
   try {
     response.value = await InterpolationsService.postInterpolationsData(data);
+    // Update xVector and yVector with sorted values
+    xVector.value = points.map(p => p.x);
+    yVector.value = points.map(p => p.y);
   } catch (error) {
     console.log('Error posting form data:', error);
   }
@@ -86,6 +96,12 @@ const methods = [
     description: 'Uses a matrix-based approach to find coefficients of the interpolating polynomial.'
   }
 ];
+
+const parseSplinePolynomials = (polynom: string): string[] => {
+  // Remove brackets and split by comma
+  const polynomialString = polynom.slice(1, -1);
+  return polynomialString.split(', ').map(p => p.replace(/['"]/g, ''));
+};
 </script>
 
 <template>
@@ -269,6 +285,33 @@ const methods = [
       <h5 class="m-0 font-weight-bold text-primary">Interpolation Result</h5>
     </div>
     <div class="card-body">
+      <!-- Polynomial equation display -->
+      <div class="polynomial-equation mb-4">
+        <h6 class="font-weight-bold">
+          {{ selectedMethod === 'spline' ? 'Piecewise Polynomials:' : 'Resulting Polynomial:' }}
+        </h6>
+        
+        <!-- For spline method -->
+        <div v-if="selectedMethod === 'spline'" class="spline-segments">
+          <div v-for="(segment, index) in parseSplinePolynomials(response.polynom)" :key="index" class="segment-box mb-2">
+            <div class="segment-header">
+              Segment {{ index + 1 }}:
+              <span class="segment-interval">
+                x ∈ [{{ xVector[index] }}, {{ xVector[index + 1] }}]
+              </span>
+            </div>
+            <div class="equation-box">
+              <code>f(x) = {{ segment }}</code>
+            </div>
+          </div>
+        </div>
+        
+        <!-- For other methods -->
+        <div v-else class="equation-box">
+          <code>f(x) = {{ response.polynom }}</code>
+        </div>
+      </div>
+      
       <InterpolationGraph 
         :polynom="response.polynom" 
         :method="selectedMethod"
@@ -320,5 +363,29 @@ code {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+.polynomial-equation {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #dee2e6;
+}
+
+.equation-box {
+  overflow-x: auto;
+  padding: 0.5rem;
+  background-color: white;
+  border-radius: 0.25rem;
+}
+
+.equation-box code {
+  font-size: 1.1rem;
+}
+
+.segment-interval {
+  font-family: monospace;
+  margin-left: 0.5rem;
+  color: #666;
 }
 </style>

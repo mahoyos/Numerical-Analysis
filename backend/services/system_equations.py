@@ -3,8 +3,10 @@ from utils.handlers.system_equations_handler import SystemEquationsHandler
 from utils.errors.common_errors import (
     MaxIterationsReachedError,
     ToleranceNotMetError,
-    BaseError
+    BaseError,
+    ConvergenceError
 )
+from utils.system_equations import SystemEquationsUtils
 from typing import Dict, Any, List
 import numpy as np
 
@@ -47,6 +49,10 @@ class SystemEquationsService:
         if error > tolerance:
             raise ToleranceNotMetError()
 
+        convergence_status = SystemEquationsUtils.verify_solution(matrix_A, x, solution_vector, tolerance)["status"]
+        if convergence_status == "not_converged":
+            raise ConvergenceError()
+
         result = {
             "root": x.tolist(),
             "iterations": iteration_data
@@ -88,6 +94,10 @@ class SystemEquationsService:
             raise MaxIterationsReachedError()
         if error > tolerance:
             raise ToleranceNotMetError()
+        
+        convergence_status = SystemEquationsUtils.verify_solution(matrix_A, x, solution_vector, tolerance)["status"]
+        if convergence_status == "not_converged":
+            raise ConvergenceError()
 
         result = {
             "root": x.tolist(),
@@ -130,6 +140,10 @@ class SystemEquationsService:
                 raise MaxIterationsReachedError()
             if error > tolerance:
                 raise ToleranceNotMetError()
+            
+            convergence_status = SystemEquationsUtils.verify_solution(matrix_A, x, solution_vector, tolerance)["status"]
+            if convergence_status == "not_converged":
+                raise ConvergenceError()
 
             return {
                 "root": x.tolist(),

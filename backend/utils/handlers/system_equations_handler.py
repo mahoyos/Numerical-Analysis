@@ -5,6 +5,7 @@ from utils.errors.common_errors import (
     BaseError,
     DivisionByZeroError,
     FunctionEvaluationError,
+    ConvergenceError
 )
 from numpy.linalg import LinAlgError
 import numpy as np

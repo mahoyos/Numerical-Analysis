@@ -23,6 +23,7 @@ async def interpolation_route(input_data: InterpolationInput) -> Dict[str, Any]:
             input_data.y_points,
             input_data.degree,
         )
+        print(str(result))
         result = {"polynom": str(result)}
     elif method == "vandermonde":
         result = InterpolationService.vandermonde_service(

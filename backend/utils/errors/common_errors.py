@@ -34,3 +34,7 @@ class FunctionZeroValueError(BaseError):
 class DerivativeZeroValueError(BaseError):
     def __init__(self, message: str = "The derivative of F takes a zero value."):
         super().__init__(message, "DERIVATIVE_ZERO_VALUE")
+
+class ConvergenceError(BaseError):
+    def __init__(self, message: str = "The system does not converge."):
+        super().__init__(message, "CONVERGENCE_ERROR")

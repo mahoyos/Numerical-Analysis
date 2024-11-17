@@ -46,11 +46,21 @@
       const functions = polynom.slice(1, -1).split(',');
       const data = [];
       
+      // Asegurarse de que los puntos estén ordenados
+      const sortedPoints = props.xPoints.map((x, index) => ({
+        x: x,
+        y: props.yPoints[index]
+      })).sort((a, b) => a.x - b.x);
+
       for (let i = 0; i < functions.length; i++) {
-        const xStart = i + 1;
-        const xEnd = i + 2;
+        const xStart = sortedPoints[i].x;
+        const xEnd = sortedPoints[i + 1].x;
         
-        for (let x = xStart; x <= xEnd; x += 0.01) {
+        const numPoints = 100;
+        const step = (xEnd - xStart) / numPoints;
+        
+        for (let j = 0; j <= numPoints; j++) {
+          const x = xStart + j * step;
           try {
             const y = eval(functions[i].trim().replace(/x/g, `(${x})`));
             data.push({ x, y });
@@ -59,14 +69,38 @@
           }
         }
       }
+      
       return data;
     }
 
+    // Para otros métodos (newton, lagrange, vandermonde)
+    const sortedPoints = props.xPoints.map((x, index) => ({
+      x: x,
+      y: props.yPoints[index]
+    })).sort((a, b) => a.x - b.x);
+
     const data = [];
-    for (let x = -100; x <= 100; x += 0.1) {
-      const y = eval(polynom.replace(/x/g, `(${x})`));
-      data.push({ x, y });
+    
+    // Iterar sobre cada par de puntos consecutivos
+    for (let i = 0; i < sortedPoints.length - 1; i++) {
+      const xStart = sortedPoints[i].x;
+      const xEnd = sortedPoints[i + 1].x;
+      
+      // Generar puntos para este segmento
+      const numPoints = 100;
+      const step = (xEnd - xStart) / numPoints;
+      
+      for (let j = 0; j <= numPoints; j++) {
+        const x = xStart + j * step;
+        try {
+          const y = eval(polynom.replace(/x/g, `(${x})`));
+          data.push({ x, y });
+        } catch (error) {
+          console.error(`Error evaluating function at x=${x}:`, error);
+        }
+      }
     }
+    
     return data;
   };
   
