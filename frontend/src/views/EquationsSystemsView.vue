@@ -73,14 +73,13 @@ const handleSubmit = async (event : Event) => {
     }
 
     success.value = true;
-    tableData.value = response.iteration_data.map((iteration: any) => ({
+    tableData.value = response.iterations.map((iteration: any) => ({
       iteration: iteration[0],
       values: iteration[1],
       error: iteration[2],
     }));
     
-    // Get the last iteration's values as the final solution
-    finalSolution.value = tableData.value[tableData.value.length - 1].values;
+    finalSolution.value = response.root;
 
   } catch (error: any) {
     messageType.value = 'error';

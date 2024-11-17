@@ -5,12 +5,13 @@ from utils.errors.base_error import BaseError
 class ResponseHandler:
     @staticmethod
     def success_response(data: Any) -> Dict[str, Any]:
-        return {
+        response = {
             "status": "success",
             "root": data["root"],
             "iterations": data["iterations"],
             "error": None
         }
+        return response
 
     @staticmethod
     def error_response(error: BaseError) -> Dict[str, Any]:

@@ -49,9 +49,8 @@ class SystemEquationsService:
 
         result = {
             "root": x.tolist(),
-            "iteration_data": iteration_data
+            "iterations": iteration_data
         }
-
         return result
 
     @staticmethod
@@ -92,7 +91,7 @@ class SystemEquationsService:
 
         result = {
             "root": x.tolist(),
-            "iteration_data": iteration_data,
+            "iterations": iteration_data,
         }
 
         return result
@@ -134,7 +133,7 @@ class SystemEquationsService:
 
             return {
                 "root": x.tolist(),
-                "iteration_data": iteration_data
+                "iterations": iteration_data
             }
 
         except Exception as e:
