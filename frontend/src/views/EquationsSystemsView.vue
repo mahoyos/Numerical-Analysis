@@ -225,14 +225,68 @@ const methods = [
         </table>
       </div>
       <div class="mt-4">
-        <h6 class="font-weight-bold">Important Notes:</h6>
-        <ul>
-          <li><strong>Diagonally Dominant:</strong> A matrix is strictly diagonally dominant if |aii| > Σ|aij| (i≠j) for each row i, where aii is the diagonal element.</li>
-          <li><strong>Positive Definite:</strong> A symmetric matrix A is positive definite if xᵀAx > 0 for all non-zero vectors x. This property ensures unique solutions and convergence.</li>
-          <li><strong>Convergence Speed:</strong> Generally, with optimal parameters: SOR > Gauss-Seidel > Jacobi.</li>
-          <li><strong>Method Selection:</strong> Consider matrix properties, system size, and computational resources when choosing a method.</li>
-          <li><strong>Iteration Cost:</strong> Each method has different per-iteration computational costs, which should be considered alongside convergence rate.</li>
-        </ul>
+        <h6 class="font-weight-bold">Spectral Radius and Convergence:</h6>
+        <p class="mb-3">
+          The spectral radius ρ(T) of the iteration matrix T determines whether an iterative method will converge. 
+          For convergence, we need ρ(T) < 1.
+        </p>
+        
+        <!-- Add new table for iteration matrices -->
+        <div class="table-responsive mb-4">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Iteration Matrix</th>
+                <th>Convergence Condition (ρ(T))</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Jacobi</td>
+                <td>T<sub>J</sub> = D<sup>-1</sup>(L + U)</td>
+                <td>ρ(T<sub>J</sub>) < 1</td>
+              </tr>
+              <tr>
+                <td>Gauss-Seidel</td>
+                <td>T<sub>GS</sub> = -(D + L)<sup>-1</sup>U</td>
+                <td>ρ(T<sub>GS</sub>) < 1</td>
+              </tr>
+              <tr>
+                <td>SOR (1 < ω < 2)</td>
+                <td>T<sub>SOR</sub> = (D + ωL)<sup>-1</sup>((1 - ω)D - ωU)</td>
+                <td>ρ(T<sub>SOR</sub>) < 1</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="alert alert-warning">
+          <h6 class="font-weight-bold">Important Convergence Considerations:</h6>
+          <ul class="mb-0">
+            <li><strong>Jacobi Method:</strong>
+              <ul>
+                <li>Requires diagonal dominance or symmetric positive definiteness</li>
+                <li>May diverge if matrix doesn't meet these conditions</li>
+              </ul>
+            </li>
+            <li><strong>Gauss-Seidel Method:</strong>
+              <ul>
+                <li>Generally has better convergence than Jacobi</li>
+                <li>Converges for diagonally dominant or symmetric positive definite matrices</li>
+                <li>May still diverge if matrix properties aren't met</li>
+              </ul>
+            </li>
+            <li><strong>SOR Method:</strong>
+              <ul>
+                <li>Convergence heavily depends on choice of ω parameter</li>
+                <li>Optimal ω can provide faster convergence than Gauss-Seidel</li>
+                <li>Poor choice of ω can cause divergence even when Gauss-Seidel converges</li>
+                <li>Typically requires 0 < ω < 2 with optimal values usually between 1 and 2</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
