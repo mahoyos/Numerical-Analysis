@@ -82,6 +82,67 @@ const handleSubmit = async (event: any) => {
     
   </div>
 
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Fixed Point Method Information</h6>
+    </div>
+    <div class="card-body">
+      <h6><b>Conditions for Convergence:</b></h6>
+      <ul>
+        <li>The function <math><mi>g</mi>(<mi>x</mi>)</math> must be continuous in the interval where the solution is sought.</li>
+        <li>
+          The initial value 
+          <math>
+            <mi>x</mi><msub>0</msub>
+          </math> 
+          must be within the domain of 
+          <math><mi>g</mi>(<mi>x</mi>)</math>.
+        </li>
+      </ul>
+      <h6><b>Failure Cases:</b></h6>
+      <ul>
+        <li>If 
+          <math>
+            <mo>|</mo>
+            <msup>
+              <mi>g</mi>
+              <mo>&apos;</mo>
+            </msup>
+            <mo>(</mo>
+            <mi>x</mi>
+            <mo>)</mo>
+            <mo>|</mo>
+            <mo>&ge;</mo>
+            <mn>1</mn>
+          </math>, the method is unlikely to converge.
+        </li>
+        <li>
+          It may diverge or oscillate if the initial value is poorly chosen.
+        </li>
+      </ul>
+      <h6><b>Recommendations:</b></h6>
+      <ul>
+        <li>Verify that <math><mi>g</mi>(<mi>x</mi>)</math> is well-defined and has no discontinuities.</li>
+        <li>
+          Use a graph of <math><mi>g</mi>(<mi>x</mi>)</math> to identify intervals where 
+          <math>
+            <mo>|</mo>
+            <msup>
+              <mi>g</mi>
+              <mo>&apos;</mo>
+            </msup>
+            <mo>(</mo>
+            <mi>x</mi>
+            <mo>)</mo>
+            <mo>|</mo>
+            <mo>&lt;</mo>
+            <mn>1</mn>
+          </math>.
+        </li>
+      </ul>
+    </div>
+  </div>
+
 
   <div class="card shadow mb-4">
     <div class="card-header py-3">

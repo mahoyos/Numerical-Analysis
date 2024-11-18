@@ -79,6 +79,38 @@ const handleSubmit = async (event: any) => {
       </ul>
     </div>
   </div>
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Newton-Raphson Method Information</h6>
+    </div>
+    <div class="card-body">
+      <h6><b>Conditions for Convergence:</b></h6>
+      <ul>
+        <li>The function <math><mi>f</mi>(<mi>x</mi>)</math> must be differentiable, and its derivative <math><msup><mi>f</mi><mo>&apos;</mo></msup>(<mi>x</mi>)</math> must not be zero near the root.</li>
+        <li>
+          The method converges locally: the initial value 
+          <math><mi>x</mi><msub>0</msub></math> must be reasonably close to the root.
+        </li>
+      </ul>
+      <h6><b>Failure Cases:</b></h6>
+      <ul>
+        <li>If 
+          <math><msup><mi>f</mi><mo>&apos;</mo></msup>(<mi>x</mi>) = 0</math> near the initial point, the method may diverge.
+        </li>
+        <li>
+          For oscillatory functions or functions with multiple roots, it may converge to an incorrect root.
+        </li>
+        <li>It is sensitive to poorly chosen initial values.</li>
+      </ul>
+      <h6><b>Recommendations:</b></h6>
+      <ul>
+        <li>Use a good initial estimate for <math><mi>x</mi><msub>0</msub></math>.</li>
+        <li>
+          Consider graphing the function to understand its behavior before applying the method.
+        </li>
+      </ul>
+    </div>
+  </div>
     <div class="card shadow mb-4">
       <div class="card-header py-3">
         <h6 class="m-0 font-weight-bold text-primary">Newton-Raphson Method Form</h6>

@@ -85,7 +85,34 @@ const handleSubmit = async (event: any) => {
         <li class="mt-3"><b>Function Expression: </b>The mathematical function where the root is being sought, written in Python syntax (e.g., `**` for powers) without quotes.</li>
       </ul>
     </div>
-    
+  </div>
+
+  <!-- Help Section -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Help: Bisection Method</h6>
+    </div>
+    <div class="card-body">
+      <h5>Conditions for Convergence</h5>
+      <ul>
+        <li>The function must be continuous in the given interval.</li>
+        <li>The product f(a) . f(b) must be negative, indicating a sign change in the interval.</li>
+      </ul>
+
+      <h5>Potential Pitfalls</h5>
+      <ul>
+        <li>If the initial interval does not contain a root (i.e., f(a) . f(b) > 0), the method will not converge.</li>
+        <li>If the tolerance is too small, the maximum number of iterations may not be enough to achieve the desired precision.</li>
+        <li>The method fails if the function has an inflection point without crossing the x-axis in the interval.</li>
+      </ul>
+
+      <h5>Tips for Using the Method</h5>
+      <ul>
+        <li>Choose an initial interval where the function changes sign.</li>
+        <li>Adjust the tolerance and maximum number of iterations based on the required precision.</li>
+        <li>Ensure that the function is correctly defined and evaluated at the interval boundaries.</li>
+      </ul>
+    </div>
   </div>
 
   <div class="card shadow mb-4">
@@ -96,7 +123,7 @@ const handleSubmit = async (event: any) => {
       <form @submit="handleSubmit">
         <div class="row">
           <div class="col">
-            <label >Left Bound</label>
+            <label>Left Bound</label>
             <input type="number" class="form-control" id="leftBound" name="leftBound" placeholder="Enter left bound" step="any" required>
           </div>
           <div class="col">
@@ -142,6 +169,7 @@ const handleSubmit = async (event: any) => {
       </form>
     </div>
   </div>
+  
   <div v-if="message" class="alert" :class="{'alert-success': messageType === 'success', 'alert-danger': messageType === 'error'}">
     {{ message }}
   </div>
