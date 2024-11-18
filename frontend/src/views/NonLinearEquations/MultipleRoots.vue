@@ -79,6 +79,35 @@ const handleSubmit = async (event: any) => {
       </ul>
     </div>
   </div> 
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Multiple Roots Method Information</h6>
+    </div>
+    <div class="card-body">
+      <h6><b>Conditions for Convergence:</b></h6>
+      <ul>
+        <li>
+          The method is designed for roots where 
+          <math><msup><mi>f</mi><mo>&apos;</mo></msup>(<mi>x</mi>) = 0</math> at the root being sought.
+        </li>
+        <li>Requires computation of higher-order derivatives (<math><msup><mi>f</mi><mo>&apos;&apos;</mo></msup>(<mi>x</mi>)</math>).</li>
+      </ul>
+      <h6><b>Failure Cases:</b></h6>
+      <ul>
+        <li>
+          If <math><mi>f</mi>(<mi>x</mi>)</math> or its derivatives are difficult to evaluate, numerical errors may occur.
+        </li>
+        <li>
+          If initialized near a simple root instead of a multiple root, it may converge incorrectly.
+        </li>
+      </ul>
+      <h6><b>Recommendations:</b></h6>
+      <ul>
+        <li>Ensure that the function is sufficiently differentiable in the interval of interest.</li>
+        <li>Choose this method only if you suspect the root being sought is a multiple root.</li>
+      </ul>
+    </div>
+  </div>
 
     <div class="card shadow mb-4">
       <div class="card-header py-3">    

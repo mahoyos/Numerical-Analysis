@@ -89,6 +89,53 @@ const handleSubmit = async (event: any) => {
   </div>
 
     <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">False Position Method Information</h6>
+    </div>
+    <div class="card-body">
+      <h6><b>Conditions for Convergence:</b></h6>
+      <ul>
+        <li>
+          Requires an interval 
+          <math>
+            <mo>[</mo>
+            <mi>a</mi>
+            <mo>,</mo>
+            <mi>b</mi>
+            <mo>]</mo>
+          </math> 
+          where 
+          <math>
+            <mi>f</mi>
+            <mo>(</mo>
+            <mi>a</mi>
+            <mo>)</mo>
+            <mo>&sdot;</mo>
+            <mi>f</mi>
+            <mo>(</mo>
+            <mi>b</mi>
+            <mo>)</mo>
+            <mo>&lt;</mo>
+            <mn>0</mn>
+          </math> 
+          (sign change).
+        </li>
+        <li>The function <math><mi>f</mi>(<mi>x</mi>)</math> must be continuous in the interval.</li>
+      </ul>
+      <h6><b>Failure Cases:</b></h6>
+      <ul>
+        <li>May converge slowly if the root is near one of the interval's ends.</li>
+        <li>If <math><mi>f</mi>(<mi>x</mi>)</math> has a very small slope at the root, convergence will be slower.</li>
+      </ul>
+      <h6><b>Recommendations:</b></h6>
+      <ul>
+        <li>Verify that <math><mi>f</mi>(<mi>a</mi>)</math> and <math><mi>f</mi>(<mi>b</mi>)</math> have opposite signs before starting.</li>
+        <li>This method is more robust than Newton-Raphson but can be slow in some cases.</li>
+      </ul>
+    </div>
+  </div>
+
+    <div class="card shadow mb-4">
       <div class="card-header py-3">
         <h6 class="m-0 font-weight-bold text-primary">False Position Method Form</h6>
       </div>

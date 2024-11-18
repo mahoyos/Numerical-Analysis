@@ -90,6 +90,29 @@ const handleSubmit = async (event: any) => {
 
   <div class="card shadow mb-4">
     <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Secant Method Information</h6>
+    </div>
+    <div class="card-body">
+      <h6><b>Conditions for Convergence:</b></h6>
+      <ul>
+        <li>Requires two initial points <math><mi>x</mi><sub>0</sub></math> and <math><mi>x</mi><sub>1</sub></math> close to the root.</li>
+        <li>The function <math><mi>f</mi>(<mi>x</mi>)</math> must be continuous in the interval including <math><mi>x</mi><sub>0</sub></math> and <math><mi>x</mi><sub>1</sub></math>.</li>
+      </ul>
+      <h6><b>Failure Cases:</b></h6>
+      <ul>
+        <li>If <math><mi>f(</mi>(<mi>x</mi><sub>0</sub>) = <mi>f</mi>(<mi>x</mi><sub>1</sub>)</math>, division by zero will cause the method to fail.</li>
+        <li>Converges more slowly than Newton-Raphson for smooth functions.</li>
+      </ul>
+      <h6><b>Recommendations:</b></h6>
+      <ul>
+        <li>Use reasonable initial values.</li>
+        <li>It is useful when the derivative of the function is not available or is expensive to compute.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
       <h6 class="m-0 font-weight-bold text-primary">Secant Method Form</h6>
     </div>
     <div class="card-body">
