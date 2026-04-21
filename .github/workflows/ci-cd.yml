@@ -3,10 +3,10 @@ name: Numerical Analysis Monorepo CI/CD
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
   workflow_dispatch:
 
 jobs:
@@ -157,7 +157,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Checkov IaC Scan
-        uses: bridgecrewio/checkov-action@master
+        uses: bridgecrewio/checkov-action@main
         with:
           directory: infra/
           framework: terraform
@@ -168,7 +168,7 @@ jobs:
   # -------------------------------------
   build-push-backend:
     needs: [path-filter, lint-test-backend]
-    if: needs.path-filter.outputs.backend == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: needs.path-filter.outputs.backend == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     outputs:
       repo_name: ${{ steps.set_outputs.outputs.repo_name }}
@@ -196,7 +196,7 @@ jobs:
 
       # --- Escaneo de vulnerabilidades del contenedor ---
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@main
         with:
           image-ref: '${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}-backend:${{ github.sha }}'
           format: 'table'
@@ -216,7 +216,7 @@ jobs:
   # -------------------------------------
   build-push-frontend:
     needs: [path-filter]
-    if: needs.path-filter.outputs.frontend == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: needs.path-filter.outputs.frontend == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     outputs:
       repo_name: ${{ steps.set_outputs.outputs.repo_name }}
@@ -243,7 +243,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Run Trivy vulnerability scanner (Frontend)
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@main
         with:
           image-ref: '${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}-frontend:${{ github.sha }}'
           format: 'table'
@@ -264,7 +264,7 @@ jobs:
   deploy-tf-staging:
       needs: [build-push-backend, build-push-frontend, scan-infra-checkov]
       runs-on: ubuntu-latest
-      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       outputs:
         alb_url_staging: ${{ steps.get_tf_outputs.outputs.alb_url }}
         cluster_name_staging: "numerical-analysis-staging-cluster"
