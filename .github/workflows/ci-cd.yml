@@ -268,7 +268,7 @@ jobs:
   # Job de Despliegue Terraform Staging
   # -------------------------------------
   deploy-tf-staging:
-      needs: [build-push-backend, build-push-frontend, scan-infra-checkov]
+      needs: [build-push-backend, build-push-frontend, scan-infra-checkov, sonar-scan]
       runs-on: ubuntu-latest
       if: |
         always() &&

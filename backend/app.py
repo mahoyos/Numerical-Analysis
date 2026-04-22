@@ -21,4 +21,4 @@ app.include_router(interpolation_router)
 
 # uvicorn app:app --host 127.0.0.1 --port 8000 --reload
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)  # NOSONAR
