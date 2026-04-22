@@ -15,9 +15,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 def health_check():
+    """
+    Root endpoint serving as a health check for AWS Load Balancer.
+    Confirms that the FastAPI service is running.
+    """
     return {"status": "ok"}
+
 
 app.include_router(router)
 app.include_router(system_equations_router)
