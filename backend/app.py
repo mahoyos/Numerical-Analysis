@@ -16,7 +16,7 @@ app.add_middleware(
 )
 
 
-@app.get("/")
+@app.get("/health")
 def health_check():
     """
     Root endpoint serving as a health check for AWS Load Balancer.
