@@ -192,8 +192,8 @@ jobs:
           file: backend/Dockerfile
           push: true
           tags: |
-            ${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}-backend:${{ github.sha }}
-            ${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}-backend:latest
+            ${{ vars.DOCKERHUB_USERNAME }}/numerical-analysis-backend:${{ github.sha }}
+            ${{ vars.DOCKERHUB_USERNAME }}/numerical-analysis-backend:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -201,7 +201,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}-backend:${{ github.sha }}'
+          image-ref: '${{ vars.DOCKERHUB_USERNAME }}/numerical-analysis-backend:${{ github.sha }}'
           format: 'table'
           exit-code: '0' 
           ignore-unfixed: true
@@ -211,7 +211,7 @@ jobs:
       - name: Set Job Outputs
         id: set_outputs
         run: |
-          echo "repo_name=${{ github.event.repository.name }}-backend" >> $GITHUB_OUTPUT
+          echo "repo_name=numerical-analysis-backend" >> $GITHUB_OUTPUT
           echo "image_tag=${{ github.sha }}" >> $GITHUB_OUTPUT
 
   # -------------------------------------
@@ -243,15 +243,15 @@ jobs:
           file: frontend/Dockerfile
           push: true
           tags: |
-            ${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}-frontend:${{ github.sha }}
-            ${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}-frontend:latest
+            ${{ vars.DOCKERHUB_USERNAME }}/numerical-analysis-frontend:${{ github.sha }}
+            ${{ vars.DOCKERHUB_USERNAME }}/numerical-analysis-frontend:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Run Trivy vulnerability scanner (Frontend)
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}-frontend:${{ github.sha }}'
+          image-ref: '${{ vars.DOCKERHUB_USERNAME }}/numerical-analysis-frontend:${{ github.sha }}'
           format: 'table'
           exit-code: '0' 
           ignore-unfixed: true
@@ -261,7 +261,7 @@ jobs:
       - name: Set Job Outputs
         id: set_outputs
         run: |
-          echo "repo_name=${{ github.event.repository.name }}-frontend" >> $GITHUB_OUTPUT
+          echo "repo_name=numerical-analysis-frontend" >> $GITHUB_OUTPUT
           echo "image_tag=${{ github.sha }}" >> $GITHUB_OUTPUT
 
   # -------------------------------------
