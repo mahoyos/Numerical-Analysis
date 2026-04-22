@@ -218,7 +218,7 @@ jobs:
   # Docker Build y Scan: Frontend
   # -------------------------------------
   build-push-frontend:
-    needs: [path-filter]
+    needs: [path-filter, lint-test-frontend]
     if: needs.path-filter.outputs.frontend == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     outputs:
