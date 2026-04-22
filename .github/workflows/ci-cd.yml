@@ -363,7 +363,10 @@ jobs:
   update-service-staging:
       needs: [deploy-tf-staging]
       runs-on: ubuntu-latest
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      if: |
+        always() &&
+        needs.deploy-tf-staging.result == 'success' &&
+        github.event_name == 'push' && github.ref == 'refs/heads/main'
 
       steps:
         - name: Configure AWS Credentials
