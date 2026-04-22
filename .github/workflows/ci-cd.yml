@@ -270,7 +270,11 @@ jobs:
   deploy-tf-staging:
       needs: [build-push-backend, build-push-frontend, scan-infra-checkov]
       runs-on: ubuntu-latest
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      if: |
+        always() &&
+        !contains(needs.*.result, 'failure') &&
+        !contains(needs.*.result, 'cancelled') &&
+        github.event_name == 'push' && github.ref == 'refs/heads/main'
       outputs:
         alb_url_staging: ${{ steps.get_tf_outputs.outputs.alb_url }}
         cluster_name_staging: "numerical-analysis-staging-cluster"
@@ -327,8 +331,13 @@ jobs:
             TF_VAR_lab_role_arn: ${{ vars.LAB_ROLE_ARN }}
             TF_VAR_vpc_id: ${{ vars.VPC_ID }}
           run: |
-            BACKEND_URI="${{ vars.DOCKERHUB_USERNAME }}/${{ needs.build-push-backend.outputs.repo_name }}:${{ needs.build-push-backend.outputs.image_tag }}"
-            FRONTEND_URI="${{ vars.DOCKERHUB_USERNAME }}/${{ needs.build-push-frontend.outputs.repo_name }}:${{ needs.build-push-frontend.outputs.image_tag }}"
+            BACKEND_REPO="${{ needs.build-push-backend.outputs.repo_name || 'numerical-analysis-backend' }}"
+            BACKEND_TAG="${{ needs.build-push-backend.outputs.image_tag || 'latest' }}"
+            BACKEND_URI="${{ vars.DOCKERHUB_USERNAME }}/${BACKEND_REPO}:${BACKEND_TAG}"
+
+            FRONTEND_REPO="${{ needs.build-push-frontend.outputs.repo_name || 'numerical-analysis-frontend' }}"
+            FRONTEND_TAG="${{ needs.build-push-frontend.outputs.image_tag || 'latest' }}"
+            FRONTEND_URI="${{ vars.DOCKERHUB_USERNAME }}/${FRONTEND_REPO}:${FRONTEND_TAG}"
             
             echo "Deploying Backend URI: $BACKEND_URI"
             echo "Deploying Frontend URI: $FRONTEND_URI"
@@ -354,7 +363,7 @@ jobs:
   update-service-staging:
       needs: [deploy-tf-staging]
       runs-on: ubuntu-latest
-      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
       steps:
         - name: Configure AWS Credentials
