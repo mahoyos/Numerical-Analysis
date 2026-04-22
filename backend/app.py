@@ -15,6 +15,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+def health_check():
+    return {"status": "ok"}
+
 app.include_router(router)
 app.include_router(system_equations_router)
 app.include_router(interpolation_router)
