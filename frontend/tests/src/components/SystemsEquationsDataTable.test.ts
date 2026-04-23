@@ -36,4 +36,25 @@ describe('SystemsEquationsDataTable', () => {
 
     expect(wrapper.text()).toContain('Page 2 of 3');
   });
+
+  it('handles previous/next limits correctly', async () => {
+    const tableData = Array.from({ length: 6 }, (_, i) => ({
+      iteration: i + 1,
+      values: [i, i + 1],
+      error: i / 10,
+    }));
+
+    const wrapper = mount(SystemsEquationsDataTable, {
+      props: { tableData },
+    });
+
+    const [previousButton, nextButton] = wrapper.findAll('button');
+
+    await previousButton.trigger('click');
+    expect(wrapper.text()).toContain('Page 1 of 2');
+
+    await nextButton.trigger('click');
+    await nextButton.trigger('click');
+    expect(wrapper.text()).toContain('Page 2 of 2');
+  });
 });

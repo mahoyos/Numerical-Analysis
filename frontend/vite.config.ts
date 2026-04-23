@@ -21,10 +21,13 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],
       all: true,
-      include: [
-        'src/services/**/*.ts',
-        'src/util/**/*.ts',
-        'src/router/**/*.ts'
+      include: ['src/**/*.ts', 'src/**/*.vue'],
+      exclude: [
+        'src/main.ts',
+        'src/components/ChartSolution.vue',
+        'src/components/LineGraph.vue',
+        'src/components/InterpolationGraph.vue',
+        'src/views/NonLinearEquations/**/*.vue'
       ],
       thresholds: {
         statements: 90,
