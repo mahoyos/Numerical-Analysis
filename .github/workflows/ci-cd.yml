@@ -163,7 +163,7 @@ jobs:
         with:
           args: >
             -Dsonar.projectKey=numerical-analysis-backend
-            -Dsonar.organization=<YOUR_ORG_KEY>
+            -Dsonar.organization=mahoyos
             -Dsonar.sources=backend
             -Dsonar.tests=backend/tests
             -Dsonar.exclusions=backend/__init__.py,**/.github/**,backend/.coverage,**/node_modules/**,frontend/dist/**
@@ -205,7 +205,7 @@ jobs:
         with:
           args: >
             -Dsonar.projectKey=numerical-analysis
-            -Dsonar.organization=<YOUR_ORG_KEY>
+            -Dsonar.organization=mahoyos
             -Dsonar.sources=backend,frontend/src
             -Dsonar.tests=backend/tests,frontend/tests,frontend/cypress/e2e
             -Dsonar.exclusions=**/node_modules/**,frontend/dist/**,**/.github/**,backend/.coverage
