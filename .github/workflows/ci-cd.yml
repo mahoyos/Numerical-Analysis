@@ -380,8 +380,8 @@ jobs:
             if aws s3api head-bucket --bucket "${{ vars.TF_STATE_BUCKET }}" 2>/dev/null; then
               echo "El bucket de estado ya existe."
             else
-              echo "Creando bucket de estado ${{ vars.TF_STATE_BUCKET }}..."
-              aws s3api create-bucket --bucket "${{ vars.TF_STATE_BUCKET }}" --region us-east-1
+              echo "Error: El bucket de estado ${{ vars.TF_STATE_BUCKET }} no existe o no es accesible con las credenciales configuradas."
+              exit 1
             fi
 
             aws s3api put-bucket-versioning \
@@ -617,8 +617,8 @@ jobs:
             if aws s3api head-bucket --bucket "${{ vars.TF_STATE_BUCKET }}" 2>/dev/null; then
               echo "El bucket de estado ya existe."
             else
-              echo "Creando bucket de estado ${{ vars.TF_STATE_BUCKET }}..."
-              aws s3api create-bucket --bucket "${{ vars.TF_STATE_BUCKET }}" --region us-east-1
+              echo "Error: El bucket de estado ${{ vars.TF_STATE_BUCKET }} no existe o no es accesible con las credenciales configuradas."
+              exit 1
             fi
 
             aws s3api put-bucket-versioning \
