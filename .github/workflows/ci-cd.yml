@@ -162,7 +162,7 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v5.0.0
         with:
           args: >
-            -Dsonar.projectKey=numerical-analysis-backend
+            -Dsonar.projectKey=mahoyos_Numerical-Analysis
             -Dsonar.organization=mahoyos
             -Dsonar.sources=backend
             -Dsonar.tests=backend/tests
@@ -184,7 +184,7 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v5.0.0
         with:
           args: >
-            -Dsonar.projectKey=numerical-analysis-frontend
+            -Dsonar.projectKey=mahoyos_Numerical-Analysis
             -Dsonar.organization=mahoyos
             -Dsonar.sources=frontend/src
             -Dsonar.tests=frontend/tests,frontend/cypress/e2e
@@ -204,7 +204,7 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v5.0.0
         with:
           args: >
-            -Dsonar.projectKey=numerical-analysis
+            -Dsonar.projectKey=mahoyos_Numerical-Analysis
             -Dsonar.organization=mahoyos
             -Dsonar.sources=backend,frontend/src
             -Dsonar.tests=backend/tests,frontend/tests,frontend/cypress/e2e
