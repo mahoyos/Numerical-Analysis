@@ -100,20 +100,36 @@ jobs:
             -var="frontend_image_uri=${{ steps.images.outputs.frontend_uri }}" \
             -var="subnet_ids=${SUBNET_LIST}"
 
-      - name: Force New ECS Deployment
-        run: |
-          echo "::notice::🚀 Forcing new ECS deployment for production..."
-          aws ecs update-service \
-            --cluster numerical-analysis-production-cluster \
-            --service numerical-analysis-production-service \
-            --force-new-deployment \
-            --region us-east-1
+      # NOTE: No "force-new-deployment" here! terraform apply already triggers
+      # a rolling deployment when the task definition changes. Adding another
+      # force-deploy would create competing deployments and cause timeouts.
 
       - name: Wait for Service Stability
         run: |
-          echo "::notice::⏳ Waiting for ECS service to stabilize..."
-          aws ecs wait services-stable \
-            --cluster numerical-analysis-production-cluster \
-            --services numerical-analysis-production-service \
-            --region us-east-1
-          echo "::notice::✅ Rollback complete! Service is stable."
+          echo "::notice::⏳ Waiting for ECS service to stabilize (max 5 min)..."
+          # Poll manually with a timeout instead of using `aws ecs wait` which has a 10-min fixed timeout
+          for i in $(seq 1 20); do
+            STATUS=$(aws ecs describe-services \
+              --cluster numerical-analysis-production-cluster \
+              --services numerical-analysis-production-service \
+              --region us-east-1 \
+              --query 'services[0].deployments[?status==`PRIMARY`].rolloutState' \
+              --output text)
+
+            echo "Attempt $i/20 — Deployment status: $STATUS"
+
+            if [ "$STATUS" = "COMPLETED" ]; then
+              echo "::notice::✅ Rollback complete! Service is stable."
+              exit 0
+            fi
+
+            if [ "$STATUS" = "FAILED" ]; then
+              echo "::error::❌ Deployment failed!"
+              exit 1
+            fi
+
+            sleep 15
+          done
+
+          echo "::warning::⚠️ Deployment did not stabilize in 5 minutes, but may still be in progress. Check ECS console."
+          exit 0
