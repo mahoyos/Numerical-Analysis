@@ -162,6 +162,8 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v5.0.0
         with:
           args: >
+            -Dsonar.projectKey=numerical-analysis-backend
+            -Dsonar.organization=<YOUR_ORG_KEY>
             -Dsonar.sources=backend
             -Dsonar.tests=backend/tests
             -Dsonar.exclusions=backend/__init__.py,**/.github/**,backend/.coverage,**/node_modules/**,frontend/dist/**
@@ -182,11 +184,13 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v5.0.0
         with:
           args: >
+            -Dsonar.projectKey=numerical-analysis-frontend
+            -Dsonar.organization=mahoyos
             -Dsonar.sources=frontend/src
             -Dsonar.tests=frontend/tests,frontend/cypress/e2e
             -Dsonar.exclusions=**/node_modules/**,frontend/dist/**,**/.github/**,backend/.coverage
             -Dsonar.test.inclusions=frontend/tests/**/*.ts,frontend/cypress/e2e/**/*.ts
-            -Dsonar.coverage.exclusions=frontend/src/main.ts,frontend/src/components/ChartSolution.vue,frontend/src/components/LineGraph.vue,frontend/src/components/InterpolationGraph.vue,frontend/src/views/NonLinearEquations/**/*.vue
+            -Dsonar.coverage.exclusions=frontend/src/main.ts,frontend/src/components/ChartSolution.vue,frontend/src/components/LineGraph.vue,frontend/src/components/InterpolationGraph.vue
             -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
             -Dsonar.qualitygate.wait=true
             -Dsonar.qualitygate.timeout=300
@@ -198,6 +202,17 @@ jobs:
       - name: SonarCloud Scan (Backend + Frontend)
         if: needs.path-filter.outputs.backend == 'true' && needs.path-filter.outputs.frontend == 'true'
         uses: SonarSource/sonarqube-scan-action@v5.0.0
+        with:
+          args: >
+            -Dsonar.projectKey=numerical-analysis
+            -Dsonar.organization=<YOUR_ORG_KEY>
+            -Dsonar.sources=backend,frontend/src
+            -Dsonar.tests=backend/tests,frontend/tests,frontend/cypress/e2e
+            -Dsonar.exclusions=**/node_modules/**,frontend/dist/**,**/.github/**,backend/.coverage
+            -Dsonar.test.inclusions=backend/tests/**/*.py,frontend/tests/**/*.ts,frontend/cypress/e2e/**/*.ts
+            -Dsonar.python.version=3.12
+            -Dsonar.qualitygate.wait=true
+            -Dsonar.qualitygate.timeout=300
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
