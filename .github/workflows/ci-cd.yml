@@ -120,28 +120,83 @@ jobs:
   # Consolidación SonarCloud Scan (Monorepo)
   # -------------------------------------
   sonar-scan:
-    needs: [lint-test-backend, lint-test-frontend]
-    if: always() && !cancelled()
+    needs: [path-filter, lint-test-backend, lint-test-frontend]
+    if: >
+      always() &&
+      !cancelled() &&
+      (needs.path-filter.outputs.backend == 'true' || needs.path-filter.outputs.frontend == 'true')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          
+
       - name: Download Backend Reports
+        if: needs.path-filter.outputs.backend == 'true'
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
           name: python-test-reports
-          
+
+      - name: Setup Node.js
+        if: needs.path-filter.outputs.frontend == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Frontend Dependencies
+        if: needs.path-filter.outputs.frontend == 'true'
+        working-directory: frontend
+        run: npm ci
+
       - name: Download Frontend Reports
+        if: needs.path-filter.outputs.frontend == 'true'
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
           name: frontend-test-reports
           path: frontend/coverage/
-          
-      - name: SonarCloud Scan
+
+      - name: SonarCloud Scan (Backend only)
+        if: needs.path-filter.outputs.backend == 'true' && needs.path-filter.outputs.frontend != 'true'
+        uses: SonarSource/sonarqube-scan-action@v5.0.0
+        with:
+          args: >
+            -Dsonar.sources=backend
+            -Dsonar.tests=backend/tests
+            -Dsonar.exclusions=backend/__init__.py,**/.github/**,backend/.coverage,**/node_modules/**,frontend/dist/**
+            -Dsonar.test.inclusions=backend/tests/**/*.py
+            -Dsonar.python.version=3.12
+            -Dsonar.python.pylint.reportPaths=pylint-report.txt
+            -Dsonar.python.flake8.reportPaths=flake8-report.txt
+            -Dsonar.python.coverage.reportPaths=coverage.xml
+            -Dsonar.qualitygate.wait=true
+            -Dsonar.qualitygate.timeout=300
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+
+      - name: SonarCloud Scan (Frontend only)
+        if: needs.path-filter.outputs.frontend == 'true' && needs.path-filter.outputs.backend != 'true'
+        uses: SonarSource/sonarqube-scan-action@v5.0.0
+        with:
+          args: >
+            -Dsonar.sources=frontend/src
+            -Dsonar.tests=frontend/tests,frontend/cypress/e2e
+            -Dsonar.exclusions=**/node_modules/**,frontend/dist/**,**/.github/**,backend/.coverage
+            -Dsonar.test.inclusions=frontend/tests/**/*.ts,frontend/cypress/e2e/**/*.ts
+            -Dsonar.coverage.exclusions=frontend/src/main.ts,frontend/src/components/ChartSolution.vue,frontend/src/components/LineGraph.vue,frontend/src/components/InterpolationGraph.vue,frontend/src/views/NonLinearEquations/**/*.vue
+            -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
+            -Dsonar.qualitygate.wait=true
+            -Dsonar.qualitygate.timeout=300
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+
+      - name: SonarCloud Scan (Backend + Frontend)
+        if: needs.path-filter.outputs.backend == 'true' && needs.path-filter.outputs.frontend == 'true'
         uses: SonarSource/sonarqube-scan-action@v5.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
