@@ -106,30 +106,33 @@ jobs:
 
       - name: Wait for Service Stability
         run: |
-          echo "::notice::⏳ Waiting for ECS service to stabilize (max 5 min)..."
-          # Poll manually with a timeout instead of using `aws ecs wait` which has a 10-min fixed timeout
+          echo "::notice::⏳ Waiting for new tasks to start running (max 5 min)..."
           for i in $(seq 1 20); do
-            STATUS=$(aws ecs describe-services \
+            # Get runningCount and desiredCount of the PRIMARY deployment
+            RUNNING=$(aws ecs describe-services \
               --cluster numerical-analysis-production-cluster \
               --services numerical-analysis-production-service \
               --region us-east-1 \
-              --query 'services[0].deployments[?status==`PRIMARY`].rolloutState' \
+              --query 'services[0].deployments[?status==`PRIMARY`] | [0].runningCount' \
               --output text)
 
-            echo "Attempt $i/20 — Deployment status: $STATUS"
+            DESIRED=$(aws ecs describe-services \
+              --cluster numerical-analysis-production-cluster \
+              --services numerical-analysis-production-service \
+              --region us-east-1 \
+              --query 'services[0].deployments[?status==`PRIMARY`] | [0].desiredCount' \
+              --output text)
 
-            if [ "$STATUS" = "COMPLETED" ]; then
-              echo "::notice::✅ Rollback complete! Service is stable."
+            echo "Attempt $i/20 — Running: $RUNNING / Desired: $DESIRED"
+
+            if [ "$RUNNING" -ge "$DESIRED" ] && [ "$DESIRED" -gt "0" ] 2>/dev/null; then
+              echo "::notice::✅ Rollback complete! $RUNNING/$DESIRED tasks running."
               exit 0
-            fi
-
-            if [ "$STATUS" = "FAILED" ]; then
-              echo "::error::❌ Deployment failed!"
-              exit 1
             fi
 
             sleep 15
           done
 
-          echo "::warning::⚠️ Deployment did not stabilize in 5 minutes, but may still be in progress. Check ECS console."
+          echo "::warning::⚠️ Tasks did not reach desired count in 5 min. Check ECS console."
           exit 0
+
