@@ -44,7 +44,7 @@ const sections = [
   <!-- Welcome Section -->
   <div class="card shadow mb-4">
     <div class="card-header py-3">
-      <h4 class="m-0 font-weight-bold text-primary">Welcome to Numerical Methods Calculator</h4>
+      <h4 class="m-0 font-weight-bold text-primary">Welcome to Numerical Methods Calculators</h4>
     </div>
     <div class="card-body">
       <p class="lead">
