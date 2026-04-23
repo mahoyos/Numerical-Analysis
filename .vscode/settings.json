@@ -1,0 +1,6 @@
+{
+    "sonarlint.connectedMode.project": {
+        "connectionId": "mahoyos",
+        "projectKey": "mahoyos_Numerical-Analysis"
+    }
+}
