@@ -4,14 +4,16 @@ on:
   push:
     branches:
       - main
+      - release
   pull_request:
     branches:
       - main
+      - release
   workflow_dispatch:
 
 jobs:
   # -------------------------------------
-  # 1. Monorepo Path Filtering (Propuesta 1)
+  # 1. Monorepo Path Filtering
   # -------------------------------------
   path-filter:
     runs-on: ubuntu-latest
@@ -66,7 +68,6 @@ jobs:
         run: flake8 backend --output-file=flake8-report.txt || true
 
       - name: Run Unit Tests with pytest and Coverage
-        # Ejecuta pruebas en el directorio de backend y genera reporte para Sonar
         run: pytest backend/tests --cov=backend --cov-report=xml || true
 
       - name: Upload Test Reports Artifacts
@@ -120,23 +121,22 @@ jobs:
   # -------------------------------------
   sonar-scan:
     needs: [lint-test-backend, lint-test-frontend]
-    # Se ejecuta siempre (incluso si los previos fallan o son omitidos por el path filter)
     if: always() && !cancelled()
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Necesario para un análisis de historial correcto en SonarQube
+          fetch-depth: 0
           
       - name: Download Backend Reports
         uses: actions/download-artifact@v4
-        continue-on-error: true # Permite pasar si el job backend fue omitido
+        continue-on-error: true
         with:
           name: python-test-reports
           
       - name: Download Frontend Reports
         uses: actions/download-artifact@v4
-        continue-on-error: true # Permite pasar si el job frontend fue omitido
+        continue-on-error: true
         with:
           name: frontend-test-reports
           path: frontend/coverage/
@@ -147,8 +147,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+
   # -------------------------------------
-  # Job de IaC Security Scan (Propuesta 4)
+  # Job de IaC Security Scan
   # -------------------------------------
   scan-infra-checkov:
     needs: path-filter
@@ -161,14 +162,17 @@ jobs:
         with:
           directory: infra/
           framework: terraform
-          soft_fail: true # Cambiar a false si deseas bloquear el despliegue al hallar fallos de seguridad
+          soft_fail: true
 
   # -------------------------------------
-  # Docker Build y Scan: Backend (Propuesta 2)
+  # Docker Build y Scan: Backend
   # -------------------------------------
   build-push-backend:
     needs: [path-filter, lint-test-backend]
-    if: needs.path-filter.outputs.backend == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: >
+      needs.path-filter.outputs.backend == 'true' &&
+      github.event_name == 'push' &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/release')
     runs-on: ubuntu-latest
     outputs:
       repo_name: ${{ steps.set_outputs.outputs.repo_name }}
@@ -197,7 +201,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # --- Escaneo de vulnerabilidades del contenedor ---
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
@@ -219,7 +222,10 @@ jobs:
   # -------------------------------------
   build-push-frontend:
     needs: [path-filter, lint-test-frontend]
-    if: needs.path-filter.outputs.frontend == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: >
+      needs.path-filter.outputs.frontend == 'true' &&
+      github.event_name == 'push' &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/release')
     runs-on: ubuntu-latest
     outputs:
       repo_name: ${{ steps.set_outputs.outputs.repo_name }}
@@ -264,9 +270,9 @@ jobs:
           echo "repo_name=numerical-analysis-frontend" >> $GITHUB_OUTPUT
           echo "image_tag=${{ github.sha }}" >> $GITHUB_OUTPUT
 
-  # -------------------------------------
-  # Job de Despliegue Terraform Staging
-  # -------------------------------------
+  # =============================================
+  # STAGING DEPLOYMENT (release branch)
+  # =============================================
   deploy-tf-staging:
       needs: [build-push-backend, build-push-frontend, scan-infra-checkov, sonar-scan]
       runs-on: ubuntu-latest
@@ -274,7 +280,7 @@ jobs:
         always() &&
         !contains(needs.*.result, 'failure') &&
         !contains(needs.*.result, 'cancelled') &&
-        github.event_name == 'push' && github.ref == 'refs/heads/main'
+        github.event_name == 'push' && github.ref == 'refs/heads/release'
       outputs:
         alb_url_staging: ${{ steps.get_tf_outputs.outputs.alb_url }}
         cluster_name_staging: "numerical-analysis-staging-cluster"
@@ -366,7 +372,7 @@ jobs:
       if: |
         always() &&
         needs.deploy-tf-staging.result == 'success' &&
-        github.event_name == 'push' && github.ref == 'refs/heads/main'
+        github.event_name == 'push' && github.ref == 'refs/heads/release'
 
       steps:
         - name: Configure AWS Credentials
@@ -385,7 +391,123 @@ jobs:
                                   --region us-east-1
             aws ecs wait services-stable --cluster ${{ needs.deploy-tf-staging.outputs.cluster_name_staging }} --services ${{ needs.deploy-tf-staging.outputs.service_name_staging }} --region us-east-1
 
-  # (Se omiten los test de staging y despliegue a PPROD por brevedad de la prueba original)
-  # Pero conservamos el flujo completo de Terraform a producción si quisieramos
-  # Despliegue Terraform Producción y Update Producción se omiten para limitar verbosidad, 
-  # pero su flujo queda arreglado en la integración principal de Terraform.
+  # =============================================
+  # PRODUCTION DEPLOYMENT (main branch)
+  # =============================================
+  deploy-tf-production:
+      needs: [build-push-backend, build-push-frontend, scan-infra-checkov, sonar-scan]
+      runs-on: ubuntu-latest
+      if: |
+        always() &&
+        !contains(needs.*.result, 'failure') &&
+        !contains(needs.*.result, 'cancelled') &&
+        github.event_name == 'push' && github.ref == 'refs/heads/main'
+      outputs:
+        alb_url_production: ${{ steps.get_tf_outputs.outputs.alb_url }}
+        cluster_name_production: "numerical-analysis-production-cluster"
+        service_name_production: "numerical-analysis-production-service"
+
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+
+        - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v4
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+            aws-region: us-east-1
+
+        - name: Ensure Terraform State Bucket
+          run: |
+            if [ -z "${{ vars.TF_STATE_BUCKET }}" ]; then
+              echo "Error: Debes definir la variable del repositorio TF_STATE_BUCKET."
+              exit 1
+            fi
+
+            if aws s3api head-bucket --bucket "${{ vars.TF_STATE_BUCKET }}" 2>/dev/null; then
+              echo "El bucket de estado ya existe."
+            else
+              echo "Creando bucket de estado ${{ vars.TF_STATE_BUCKET }}..."
+              aws s3api create-bucket --bucket "${{ vars.TF_STATE_BUCKET }}" --region us-east-1
+            fi
+
+            aws s3api put-bucket-versioning \
+              --bucket "${{ vars.TF_STATE_BUCKET }}" \
+              --versioning-configuration Status=Enabled
+
+        - name: Setup Terraform
+          uses: hashicorp/setup-terraform@v3
+          with:
+            terraform_version: "~1.6"
+            terraform_wrapper: false
+
+        - name: Terraform Init (Production)
+          working-directory: infra
+          run: |
+            terraform init -reconfigure \
+              -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
+              -backend-config="key=production/terraform.tfstate" \
+              -backend-config="region=us-east-1"
+
+        - name: Terraform Apply (Production)
+          working-directory: infra
+          env:
+            TF_VAR_environment_name: production
+            TF_VAR_lab_role_arn: ${{ vars.LAB_ROLE_ARN }}
+            TF_VAR_vpc_id: ${{ vars.VPC_ID }}
+          run: |
+            BACKEND_REPO="${{ needs.build-push-backend.outputs.repo_name || 'numerical-analysis-backend' }}"
+            BACKEND_TAG="${{ needs.build-push-backend.outputs.image_tag || 'latest' }}"
+            BACKEND_URI="${{ vars.DOCKERHUB_USERNAME }}/${BACKEND_REPO}:${BACKEND_TAG}"
+
+            FRONTEND_REPO="${{ needs.build-push-frontend.outputs.repo_name || 'numerical-analysis-frontend' }}"
+            FRONTEND_TAG="${{ needs.build-push-frontend.outputs.image_tag || 'latest' }}"
+            FRONTEND_URI="${{ vars.DOCKERHUB_USERNAME }}/${FRONTEND_REPO}:${FRONTEND_TAG}"
+
+            echo "Deploying Backend URI: $BACKEND_URI"
+            echo "Deploying Frontend URI: $FRONTEND_URI"
+
+            SUBNET_LIST=$(echo "${{ vars.SUBNET_IDS }}" | \
+              awk -F',' '{printf "["; for(i=1;i<=NF;i++){printf "\"%s\"%s",$i,(i<NF?",":"")}; printf "]"}')
+
+            terraform apply -auto-approve \
+              -var="backend_image_uri=${BACKEND_URI}" \
+              -var="frontend_image_uri=${FRONTEND_URI}" \
+              -var="subnet_ids=${SUBNET_LIST}"
+
+        - name: Get Terraform Outputs (Production)
+          id: get_tf_outputs
+          working-directory: infra
+          run: |
+            ALB_URL=$(terraform output -raw alb_url)
+            echo "alb_url=${ALB_URL}" >> $GITHUB_OUTPUT
+
+  # -------------------------------------
+  # Job de Actualización Servicio Production (ECS)
+  # -------------------------------------
+  update-service-production:
+      needs: [deploy-tf-production]
+      runs-on: ubuntu-latest
+      if: |
+        always() &&
+        needs.deploy-tf-production.result == 'success' &&
+        github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+      steps:
+        - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v4
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+            aws-region: us-east-1
+
+        - name: Force New Deployment ECS Service Production
+          run: |
+            aws ecs update-service --cluster ${{ needs.deploy-tf-production.outputs.cluster_name_production }} \
+                                  --service ${{ needs.deploy-tf-production.outputs.service_name_production }} \
+                                  --force-new-deployment \
+                                  --region us-east-1
+            aws ecs wait services-stable --cluster ${{ needs.deploy-tf-production.outputs.cluster_name_production }} --services ${{ needs.deploy-tf-production.outputs.service_name_production }} --region us-east-1

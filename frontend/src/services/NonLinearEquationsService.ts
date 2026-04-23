@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL: string = import.meta.env.VITE_API_URL as string;
+const API_URL: string = '/api/';
 
 class NonLinearEquationsService {
 
