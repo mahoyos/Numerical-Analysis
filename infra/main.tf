@@ -106,7 +106,7 @@ resource "aws_security_group" "ecs_sg" {
 
 # --- Load Balancer ---
 resource "aws_lb" "main" {
-  name               = "numerical-analysis-${var.environment_name}-alb"
+  name               = "num-analysis-${var.environment_name}-alb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_sg.id]

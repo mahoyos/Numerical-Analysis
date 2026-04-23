@@ -3,21 +3,32 @@ name: 🚨 Production Rollback (Panic Button)
 on:
   workflow_dispatch:
     inputs:
-      image_tag:
-        description: 'Docker image tag/SHA to roll back to (e.g. abc1234 or latest)'
-        required: true
+      backend_image_tag:
+        description: 'Backend Docker image tag/SHA to roll back to (leave empty to keep current)'
+        required: false
         type: string
-      component:
-        description: 'Which component to roll back'
-        required: true
-        type: choice
-        options:
-          - both
-          - backend
-          - frontend
+        default: ''
+      frontend_image_tag:
+        description: 'Frontend Docker image tag/SHA to roll back to (leave empty to keep current)'
+        required: false
+        type: string
+        default: ''
 
 jobs:
+  validate-inputs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate at least one tag is provided
+        run: |
+          if [ -z "${{ inputs.backend_image_tag }}" ] && [ -z "${{ inputs.frontend_image_tag }}" ]; then
+            echo "::error::Debes especificar al menos un tag (backend o frontend) para hacer rollback."
+            exit 1
+          fi
+          echo "::notice::Backend tag: ${{ inputs.backend_image_tag || '(sin cambio)' }}"
+          echo "::notice::Frontend tag: ${{ inputs.frontend_image_tag || '(sin cambio)' }}"
+
   rollback-production:
+    needs: validate-inputs
     runs-on: ubuntu-latest
     environment: production
 
@@ -51,32 +62,28 @@ jobs:
         id: images
         working-directory: infra
         run: |
-          # Get current images from Terraform state
-          CURRENT_BACKEND=$(terraform output -raw 2>/dev/null || echo "")
-          
-          ROLLBACK_TAG="${{ inputs.image_tag }}"
-          COMPONENT="${{ inputs.component }}"
           DOCKER_USER="${{ vars.DOCKERHUB_USERNAME }}"
 
-          if [ "$COMPONENT" = "backend" ] || [ "$COMPONENT" = "both" ]; then
-            BACKEND_URI="${DOCKER_USER}/numerical-analysis-backend:${ROLLBACK_TAG}"
+          # Backend: use provided tag, or keep current from Terraform state
+          if [ -n "${{ inputs.backend_image_tag }}" ]; then
+            BACKEND_URI="${DOCKER_USER}/numerical-analysis-backend:${{ inputs.backend_image_tag }}"
+            echo "::notice::🔄 Rolling back BACKEND to: ${{ inputs.backend_image_tag }}"
           else
-            # Keep current backend — pull from Terraform state
             BACKEND_URI=$(terraform state show aws_ecs_task_definition.app 2>/dev/null | grep -o '".*numerical-analysis.*backend:[^"]*"' | tr -d '"' || echo "${DOCKER_USER}/numerical-analysis-backend:latest")
+            echo "::notice::⏸️ Backend: keeping current image"
           fi
 
-          if [ "$COMPONENT" = "frontend" ] || [ "$COMPONENT" = "both" ]; then
-            FRONTEND_URI="${DOCKER_USER}/numerical-analysis-frontend:${ROLLBACK_TAG}"
+          # Frontend: use provided tag, or keep current from Terraform state
+          if [ -n "${{ inputs.frontend_image_tag }}" ]; then
+            FRONTEND_URI="${DOCKER_USER}/numerical-analysis-frontend:${{ inputs.frontend_image_tag }}"
+            echo "::notice::🔄 Rolling back FRONTEND to: ${{ inputs.frontend_image_tag }}"
           else
-            # Keep current frontend — pull from Terraform state
             FRONTEND_URI=$(terraform state show aws_ecs_task_definition.app 2>/dev/null | grep -o '".*numerical-analysis.*frontend:[^"]*"' | tr -d '"' || echo "${DOCKER_USER}/numerical-analysis-frontend:latest")
+            echo "::notice::⏸️ Frontend: keeping current image"
           fi
 
           echo "backend_uri=${BACKEND_URI}" >> $GITHUB_OUTPUT
           echo "frontend_uri=${FRONTEND_URI}" >> $GITHUB_OUTPUT
-          echo "::notice::🔄 Rolling back ${COMPONENT} to tag: ${ROLLBACK_TAG}"
-          echo "::notice::Backend image: ${BACKEND_URI}"
-          echo "::notice::Frontend image: ${FRONTEND_URI}"
 
       - name: Terraform Apply (Rollback)
         working-directory: infra
