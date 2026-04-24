@@ -23,14 +23,15 @@ const sections = [
   },
   {
     title: 'Systems of Equations',
-    description: 'Methods for solving systems of linear and non-linear equations. Includes Jacobi Method, Gauss-Seidel Method, and SOR (Successive Over-Relaxation)',
+    description: 'Methods for solving systems of linear and non-linear equation. Includes Jacobi Method, Gauss-Seidel Method, and SOR (Successive Over-Relaxation)',
     methods: [
       { name: 'Equations Systems', route: '/equations-systems' }
     ]
   },
   {
     title: 'Interpolation',
-    description: 'Techniques for constructing new data points within a discrete set of known points. Includes Newton Interpolation, Linear Spline, Quadratic Spline, Vandermonde, and Lagrange methods: [
+    description: 'Techniques for constructing new data points within a discrete set of known points. Includes Newton Interpolation, Linear Spline, Quadratic Spline, Vandermonde, and Lagrange methods',
+    methods: [
       { name: 'Interpolations', route: '/interpolations' }
     ]
   }
@@ -47,7 +48,7 @@ const sections = [
     </div>
     <div class="card-body">
       <p class="lead">
-        This application provides a comprehensive suite of numerical methods for solving a range of mathematical problems.
+        This application provides a comprehensive suite of numerical methods for solving various mathematical problems.
         Choose from our collection of implemented methods below to get started.
       </p>
     </div>
