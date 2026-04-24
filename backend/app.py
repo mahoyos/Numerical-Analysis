@@ -22,7 +22,7 @@ def health_check():
     Root endpoint serving as a health check for AWS Load Balancer.
     Confirms that the FastAPI service is running.
     """
-    return {"status": "ok"}
+    return {"status": "degraded"}
 
 
 app.include_router(router)
