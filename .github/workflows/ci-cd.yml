@@ -232,7 +232,7 @@ jobs:
         with:
           directory: infra/
           framework: terraform
-          soft_fail: true
+          soft_fail: false
 
   # -------------------------------------
   # Docker Build y Scan: Backend
@@ -350,7 +350,7 @@ jobs:
         always() &&
         !contains(needs.*.result, 'failure') &&
         !contains(needs.*.result, 'cancelled') &&
-        github.event_name == 'push' && github.ref == 'refs/heads/release'
+        github.event_name == 'push'
       outputs:
         alb_url_staging: ${{ steps.get_tf_outputs.outputs.alb_url }}
         cluster_name_staging: "numerical-analysis-staging-cluster"
@@ -457,7 +457,7 @@ jobs:
       if: |
         always() &&
         needs.deploy-tf-staging.result == 'success' &&
-        github.event_name == 'push' && github.ref == 'refs/heads/release'
+        github.event_name == 'push'
 
       steps:
         - name: Configure AWS Credentials
@@ -482,7 +482,7 @@ jobs:
       if: |
         always() &&
         needs.update-service-staging.result == 'success' &&
-        github.event_name == 'push' && github.ref == 'refs/heads/release'
+        github.event_name == 'push'
 
       steps:
         - name: Checkout code
@@ -518,7 +518,7 @@ jobs:
       if: |
         always() &&
         needs.acceptance-test-staging.result == 'failure' &&
-        github.event_name == 'push' && github.ref == 'refs/heads/release' &&
+        github.event_name == 'push' &&
         (needs.deploy-tf-staging.outputs.previous_backend_uri_staging != '' || needs.deploy-tf-staging.outputs.previous_frontend_uri_staging != '')
 
       steps:
@@ -583,11 +583,12 @@ jobs:
   deploy-tf-production:
       needs: [build-push-backend, build-push-frontend, scan-infra-checkov, sonar-scan]
       runs-on: ubuntu-latest
+      environment: pdn
       if: |
         always() &&
         !contains(needs.*.result, 'failure') &&
         !contains(needs.*.result, 'cancelled') &&
-        github.event_name == 'push' && github.ref == 'refs/heads/main'
+        github.event_name == 'push'
       outputs:
         alb_url_production: ${{ steps.get_tf_outputs.outputs.alb_url }}
         cluster_name_production: "numerical-analysis-production-cluster"
@@ -694,7 +695,7 @@ jobs:
       if: |
         always() &&
         needs.deploy-tf-production.result == 'success' &&
-        github.event_name == 'push' && github.ref == 'refs/heads/main'
+        github.event_name == 'push'
 
       steps:
         - name: Configure AWS Credentials
@@ -719,7 +720,7 @@ jobs:
       if: |
         always() &&
         needs.update-service-production.result == 'success' &&
-        github.event_name == 'push' && github.ref == 'refs/heads/main'
+        github.event_name == 'push'
 
       steps:
         - name: Run post-deploy smoke checks (Production)
@@ -743,7 +744,7 @@ jobs:
       if: |
         always() &&
         needs.smoke-test-production.result == 'failure' &&
-        github.event_name == 'push' && github.ref == 'refs/heads/main' &&
+        github.event_name == 'push' &&
         (needs.deploy-tf-production.outputs.previous_backend_uri_production != '' || needs.deploy-tf-production.outputs.previous_frontend_uri_production != '')
 
       steps:
