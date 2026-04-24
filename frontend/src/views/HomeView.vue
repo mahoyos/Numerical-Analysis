@@ -11,7 +11,7 @@ const breadCrumbList = [
 const sections = [
   {
     title: 'Non-Linear Equations',
-    description: 'Collection of methods for finding roots of non-linear equations',
+    description: 'Collection of methods for finding roots of non-linear equation',
     methods: [
       { name: 'Fixed Point', route: '/fixed-point' },
       { name: 'Newton-Raphson', route: '/newton-raphson' },
@@ -23,7 +23,7 @@ const sections = [
   },
   {
     title: 'Systems of Equations',
-    description: 'Methods for solving systems of linear and non-linear equations. Includes Jacobi Method, Gauss-Seidel Method, and SOR (Successive Over-Relaxation)',
+    description: 'Methods for solving systems of linear and non-linear equation. Includes Jacobi Method, Gauss-Seidel Method, and SOR (Successive Over-Relaxation)',
     methods: [
       { name: 'Equations Systems', route: '/equations-systems' }
     ]
