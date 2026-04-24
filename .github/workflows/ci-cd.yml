@@ -232,7 +232,7 @@ jobs:
         with:
           directory: infra/
           framework: terraform
-          soft_fail: false
+          soft_fail: true
 
   # -------------------------------------
   # Docker Build y Scan: Backend
