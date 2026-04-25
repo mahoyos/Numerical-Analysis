@@ -11,10 +11,15 @@
 Se eligió la estrategia de **Trunk-Based Development**.
 - **Sustentación:** Trunk-Based fomenta la entrega e integración continua (CI/CD) al limitar el período que los desarrolladores trabajan en ramas aisladas, evitando así el "merge hell". Con esto, la rama principal (`main`) funge como el tronco único que siempre se encuentra en un estado funcional listo para liberar. Adicionalmente, esta metodología empodera al equipo a realizar iteraciones rápidas, fallar rápido, integrar sus cambios tempranamente y alinearse a la filosofía ágil de feedback constante.
 
-*Ejemplo: `![TBD](./tbd.png)`*
+## Integración de la estrategia de versionamiento a los pipelines
+La convergencia de nuestro trunk principal y los flujos operan en base a los siguientes trigueros:
+- **`pull_request` a `main`:** Valida la calidad estática, el linting y corre las pruebas (Unitarias / Compilación) garantizando que el merge sea confiable, sin desplegar.
+- **`push` o merge a `main`:** Activa el ciclo completo. Compila código final hacia imágenes etiquetadas como *latest+sha*, inicia los análisis de Checkov y Trivy, y lanza el ciclo de aprovisionamiento de Infrastructure as Code para actualizar el cluster. Siendo trunk-based de alto nivel se incorporó como ambiente una **Aprobación Manual** final en Actions frenando la automatización productiva de un despliegue y requiriendo un ojo humano.
+
+<img width="724" height="461" alt="image" src="https://github.com/user-attachments/assets/5238ef7b-3fab-4fd7-9349-7a5f547a79a1" />
 
 ## Diseño y Componentes del Pipeline CI/CD implementado
-*Ejemplo: `![Flujograma CI/CD](./Flujoc.jpeg)`*
+<img width="1502" height="684" alt="image" src="https://github.com/user-attachments/assets/5184ce44-bb47-4281-ace1-27632cdaa071" />
 
 ## Evidencia de las modificaciones o introducciones al pipeline y arquitectura
 Para blindar nuestro pipeline se introdujeron cuatro características complejas:
@@ -45,16 +50,11 @@ Para blindar nuestro pipeline se introdujeron cuatro características complejas:
   - **Validaciones:** Pruebas e2e o de Humo directamente contra el balanceador de la carga productivo para determinar un "deployment state".
   - **Rollback:** Estrategia adaptada reactiva a nivel de jobs cuando se fracasa el target productivo.
 
-## Integración de la estrategia de versionamiento a los pipelines
-La convergencia de nuestro trunk principal y los flujos operan en base a los siguientes trigueros:
-- **`pull_request` a `main`:** Valida la calidad estática, el linting y corre las pruebas (Unitarias / Compilación) garantizando que el merge sea confiable, sin desplegar.
-- **`push` o merge a `main`:** Activa el ciclo completo. Compila código final hacia imágenes etiquetadas como *latest+sha*, inicia los análisis de Checkov y Trivy, y lanza el ciclo de aprovisionamiento de Infrastructure as Code para actualizar el cluster. Siendo trunk-based de alto nivel se incorporó como ambiente una **Aprobación Manual** final en Actions frenando la automatización productiva de un despliegue y requiriendo un ojo humano.
-
 ## Arquitectura de Software
-*Ejemplo: `![Arquitectura de Software](./Arquitectura.jpeg)`*
+<img width="1093" height="823" alt="image" src="https://github.com/user-attachments/assets/01d309fe-d9ff-4ca5-a1d5-f8f21a7ba44c" />
 
 El modelo utilizado está levantado desde cero mediante Terraform en la nube AWS:
-- **Application Load Balancer (ALB):** Punto de entrada proxy que recible el tráfico en el puerto web estándar. 
+- **Application Load Balancer (ALB):** Punto de entrada proxy que recibe el tráfico en el puerto web estándar. 
 - **AWS ECS (Elastic Container Service) con modelo Fargate:** Computación *Serverless*. Dentro del clúster corre una *Task Definition* manejando bajo una misma subred tanto al contenedor de Nginx/Frontend y el contenedor FastAPI/Backend.
 
 ## Completitud y Robustez de las pruebas implementadas
@@ -64,7 +64,7 @@ La robustez se obtiene con tres capas de confirmaciones implementadas según amb
 3. **Pruebas Smoke (Ambiente de Pre-Prod/Prod - Post-Despliegue):** Las acciones realizan peticiones `HTTP cURL` y automatizadas hacia el `alb_dns_name` generado en Terraform para confirmar conectividades de salud (`/health` y UI). Una falla dispara en el entorno la política de reversa.
 
 ## Evidencia del Pipeline ejecutado exitosamente
-*Ejemplo: `![Pipeline GitHub Actions Exitoso](./pipeline.png)`*
+<img width="378" height="589" alt="image" src="https://github.com/user-attachments/assets/6b87254e-42c0-4fcb-a2d6-b9a32fdab061" />
 
 ## Socialización de desafíos y aprendizajes
 - Aprendizaje de manejo de estado en Terraform y su integración con AWS S3 para mantener un estado remoto y compartido.
