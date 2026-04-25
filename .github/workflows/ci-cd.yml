@@ -581,7 +581,7 @@ jobs:
   # PRODUCTION DEPLOYMENT (main branch)
   # =============================================
   deploy-tf-production:
-      needs: [build-push-backend, build-push-frontend, scan-infra-checkov, sonar-scan]
+      needs: [acceptance-test-staging]
       runs-on: ubuntu-latest
       environment: pdn
       if: |
