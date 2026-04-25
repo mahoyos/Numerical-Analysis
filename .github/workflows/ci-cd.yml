@@ -581,7 +581,7 @@ jobs:
   # PRODUCTION DEPLOYMENT (main branch)
   # =============================================
   deploy-tf-production:
-      needs: [arollback-staging-on-acceptance-failure]
+      needs: [rollback-staging-on-acceptance-failure]
       runs-on: ubuntu-latest
       environment: pdn
       if: |
